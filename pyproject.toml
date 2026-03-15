@@ -9,7 +9,7 @@ requires-python = ">=3.11"
 dependencies = [
     "numpy>=1.26",
     "scipy>=1.12",
-    "polars>=0.20",
+    "polars>=1.0",
     "numba>=0.59",   # JIT for hot paths; used only where profiling shows it's needed
 ]
 
@@ -28,6 +28,8 @@ dev = [
     "ruff>=0.4",
     "ty>=0.0.1a0",
     "pre-commit>=3.7",
+]
+docs = [
     "mkdocs-material>=9.5",
     "mkdocstrings[python]>=0.25",
 ]
@@ -38,7 +40,7 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "UP", "ANN", "RUF"]
-ignore = ["ANN101", "ANN102"]
+ignore = []
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
