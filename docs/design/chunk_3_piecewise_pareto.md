@@ -6,7 +6,7 @@
 - Create: `pyreto/piecewise_pareto.py`
 - Create: `tests/test_piecewise_pareto.py`
 
-- [ ] **Step 1: Write failing tests**
+- [x] **Step 1: Write failing tests**
 
 ```python
 # tests/test_piecewise_pareto.py
@@ -83,19 +83,19 @@ class TestRPiecewisePareto:
         assert round(xs.mean() / ref, 2) == 1.0
 ```
 
-- [ ] **Step 2: Run to verify failure**
+- [x] **Step 2: Run to verify failure**
 
 ```bash
 uv run pytest tests/test_piecewise_pareto.py -v
 ```
 
-- [ ] **Step 3: Implement `pyreto/piecewise_pareto.py`**
+- [x] **Step 3: Implement `pyreto/piecewise_pareto.py`**
 
 The piecewise Pareto is a concatenation of Pareto segments. Key insight: the normalisation constant and the piece boundaries determine the CDF/PDF. The `truncation_type` parameter controls whether truncation is "last piece" (`lp`) or "whole distribution" (`wd`).
 
 Follow `Functions.R` lines 2370–2713 for CDF/PDF/quantile/random. Use `np.vectorize` for scalar implementations.
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 ```bash
 uv run pytest tests/test_piecewise_pareto.py -v
@@ -103,7 +103,7 @@ uv run pytest tests/test_piecewise_pareto.py -v
 
 Expected: All PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add pyreto/piecewise_pareto.py tests/test_piecewise_pareto.py
@@ -118,7 +118,7 @@ git commit -m "feat: add PiecewisePareto CDF, PDF, quantile, and random sampling
 - Modify: `pyreto/piecewise_pareto.py`
 - Modify: `tests/test_piecewise_pareto.py`
 
-- [ ] **Step 1: Add layer moment tests**
+- [x] **Step 1: Add layer moment tests**
 
 ```python
 from pyreto.piecewise_pareto import (
@@ -156,23 +156,23 @@ class TestPiecewisePareto_LayerMean:
         )
 ```
 
-- [ ] **Step 2: Run to verify failure**
+- [x] **Step 2: Run to verify failure**
 
 ```bash
 uv run pytest tests/test_piecewise_pareto.py::TestPiecewisePareto_LayerMean -v
 ```
 
-- [ ] **Step 3: Implement layer moments and ML estimator**
+- [x] **Step 3: Implement layer moments and ML estimator**
 
 Follow `Functions.R` lines 1079–1431 (layer moments) and 3027–3302 (ML estimator). ML uses `scipy.optimize.minimize_scalar` or `brentq`.
 
-- [ ] **Step 4: Run all PiecewisePareto tests**
+- [x] **Step 4: Run all PiecewisePareto tests**
 
 ```bash
 uv run pytest tests/test_piecewise_pareto.py -v
 ```
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add pyreto/piecewise_pareto.py tests/test_piecewise_pareto.py
