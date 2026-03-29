@@ -6,7 +6,7 @@
 
 **Architecture:** The package is split into focused modules mirroring the R source files — one module per distribution family plus separate modules for collective models, the LP matching algorithm, and fitting utilities. R's S3 dispatch (`UseMethod`) becomes a Python Protocol + concrete classes. R's `Vectorize()` becomes numpy broadcasting or `np.vectorize`. R's `lpSolve` is replaced by `scipy.optimize.linprog`; `uniroot`/`optimize` become `scipy.optimize.brentq`/`minimize_scalar`.
 
-**Tech Stack:** Python ≥ 3.11, uv, pyproject.toml, ruff, ty, pytest, pre-commit, numpy, scipy, numba (optional, for later hot-path optimisation), polars (where tabular data needed), mkdocs-material, GitHub Actions.
+**Tech Stack:** Python ≥ 3.11 (tested on 3.11, 3.12, 3.13), uv, pyproject.toml, ruff, ty, pytest, pre-commit, numpy, scipy, numba (optional, for later hot-path optimisation), polars (where tabular data needed), mkdocs-material, GitHub Actions.
 
 **R → Python name mapping:** All exported names are converted to snake_case. Examples: `Pareto_Layer_Mean` → `pareto_layer_mean`, `pPareto` → `p_pareto`, `rPareto` → `r_pareto`, `PPP_Model` (constructor) → `PPPModel` (class), `is.valid.PPP_Model` → `PPPModel.is_valid()`. A full mapping table is documented in `docs/function_mapping.md`.
 
