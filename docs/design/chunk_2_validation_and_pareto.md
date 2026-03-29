@@ -8,7 +8,7 @@
 
 These mirror `ValidationFunctions.R`. They are internal (`_` prefix) — not part of the public API.
 
-- [ ] **Step 1: Create `tests/conftest.py`**
+- [x] **Step 1: Create `tests/conftest.py`**
 
 ```python
 """Shared test fixtures."""
@@ -27,7 +27,7 @@ def pareto_losses() -> np.ndarray:
     ])
 ```
 
-- [ ] **Step 2: Write failing tests for validation helpers**
+- [x] **Step 2: Write failing tests for validation helpers**
 
 ```python
 # tests/test_validation.py  (internal, not user-facing)
@@ -89,7 +89,7 @@ def test_valid_parameters_piecewise_pareto():
     )
 ```
 
-- [ ] **Step 3: Run to verify failure**
+- [x] **Step 3: Run to verify failure**
 
 ```bash
 uv run pytest tests/test_validation.py -v
@@ -97,7 +97,7 @@ uv run pytest tests/test_validation.py -v
 
 Expected: `ImportError` or `ModuleNotFoundError`.
 
-- [ ] **Step 4: Implement `pyreto/_validation.py`**
+- [x] **Step 4: Implement `pyreto/_validation.py`**
 
 ```python
 """Internal input validation helpers.
@@ -262,7 +262,7 @@ def valid_parameters_gen_pareto(
     return ok
 ```
 
-- [ ] **Step 5: Run tests**
+- [x] **Step 5: Run tests**
 
 ```bash
 uv run pytest tests/test_validation.py -v
@@ -270,7 +270,7 @@ uv run pytest tests/test_validation.py -v
 
 Expected: All PASS.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add pyreto/_validation.py tests/conftest.py tests/test_validation.py
@@ -285,7 +285,7 @@ git commit -m "feat: add internal validation helpers"
 - Create: `pyreto/pareto.py`
 - Create: `tests/test_pareto.py` (partial — this task covers distribution functions)
 
-- [ ] **Step 1: Write failing tests for p/d/q/r Pareto**
+- [x] **Step 1: Write failing tests for p/d/q/r Pareto**
 
 ```python
 # tests/test_pareto.py
@@ -374,7 +374,7 @@ class TestRPareto:
         assert ratio == 1.0
 ```
 
-- [ ] **Step 2: Run to verify failure**
+- [x] **Step 2: Run to verify failure**
 
 ```bash
 uv run pytest tests/test_pareto.py -v
@@ -382,7 +382,7 @@ uv run pytest tests/test_pareto.py -v
 
 Expected: `ImportError`.
 
-- [ ] **Step 3: Implement CDF, PDF, quantile, random in `pyreto/pareto.py`**
+- [x] **Step 3: Implement CDF, PDF, quantile, random in `pyreto/pareto.py`**
 
 Start the file with the standard/CDF/PDF/quantile/random section. Note that many functions in the R source have a scalar (`_s`) and vectorised version — in Python we implement only the vectorised form using numpy, which handles both scalar and array inputs naturally.
 
@@ -583,7 +583,7 @@ def r_pareto(
     return q_pareto(u, t=t, alpha=alpha, truncation=truncation)
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 ```bash
 uv run pytest tests/test_pareto.py::TestPPareto tests/test_pareto.py::TestDPareto tests/test_pareto.py::TestQPareto tests/test_pareto.py::TestRPareto -v
@@ -591,7 +591,7 @@ uv run pytest tests/test_pareto.py::TestPPareto tests/test_pareto.py::TestDParet
 
 Expected: All PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add pyreto/pareto.py tests/test_pareto.py
@@ -606,7 +606,7 @@ git commit -m "feat: add Pareto CDF, PDF, quantile, and random sampling"
 - Modify: `pyreto/pareto.py`
 - Modify: `tests/test_pareto.py`
 
-- [ ] **Step 1: Add layer moment tests**
+- [x] **Step 1: Add layer moment tests**
 
 Append to `tests/test_pareto.py`:
 
@@ -685,7 +685,7 @@ class TestParetoLayerVar:
         assert pareto_layer_var(8000, 2000, alpha=2, t=5000, truncation=10000) == pytest.approx(1765367.59288524)
 ```
 
-- [ ] **Step 2: Run to verify failure**
+- [x] **Step 2: Run to verify failure**
 
 ```bash
 uv run pytest tests/test_pareto.py::TestParetoLayerMean -v
@@ -693,7 +693,7 @@ uv run pytest tests/test_pareto.py::TestParetoLayerMean -v
 
 Expected: `ImportError`.
 
-- [ ] **Step 3: Implement layer moments in `pyreto/pareto.py`**
+- [x] **Step 3: Implement layer moments in `pyreto/pareto.py`**
 
 The layer mean of Pareto(t, alpha) in cover C xs attachment A is derived from the analytical formula in the R source. Key formula for `Pareto_Layer_Mean_s` (scalar):
 
@@ -732,7 +732,7 @@ def pareto_layer_mean(
 
 See `Functions.R` for the exact scalar formulas. Implement `pareto_layer_sm` (second moment) and `pareto_layer_var` similarly.
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 ```bash
 uv run pytest tests/test_pareto.py -v
@@ -740,7 +740,7 @@ uv run pytest tests/test_pareto.py -v
 
 Expected: All PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add pyreto/pareto.py tests/test_pareto.py
@@ -755,7 +755,7 @@ git commit -m "feat: add Pareto layer mean, second moment, and variance"
 - Modify: `pyreto/pareto.py`
 - Modify: `tests/test_pareto.py`
 
-- [ ] **Step 1: Add tests**
+- [x] **Step 1: Add tests**
 
 ```python
 from pyreto.pareto import (
@@ -806,17 +806,17 @@ class TestParetoFindAlpha:
         assert pareto_find_alpha_btw_fqs(2000, 0.25, 1000, 1) == pytest.approx(2)
 ```
 
-- [ ] **Step 2: Run to verify failure**
+- [x] **Step 2: Run to verify failure**
 
 ```bash
 uv run pytest tests/test_pareto.py::TestParetoExtrapolation tests/test_pareto.py::TestParetoFindAlpha -v
 ```
 
-- [ ] **Step 3: Implement using `scipy.optimize.brentq` for root-finding**
+- [x] **Step 3: Implement using `scipy.optimize.brentq` for root-finding**
 
 R's `uniroot` → `scipy.optimize.brentq`. The alpha-finding functions solve `f(alpha) = 0` where `f` is the difference between two layer means or frequencies expressed in terms of alpha.
 
-- [ ] **Step 4: Run all Pareto tests**
+- [x] **Step 4: Run all Pareto tests**
 
 ```bash
 uv run pytest tests/test_pareto.py -v
@@ -824,7 +824,7 @@ uv run pytest tests/test_pareto.py -v
 
 Expected: All PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add pyreto/pareto.py tests/test_pareto.py
@@ -839,7 +839,7 @@ git commit -m "feat: add Pareto extrapolation and alpha-finding functions"
 - Modify: `pyreto/pareto.py`
 - Modify: `tests/test_pareto.py`
 
-- [ ] **Step 1: Add ML estimator tests (ported from R)**
+- [x] **Step 1: Add ML estimator tests (ported from R)**
 
 ```python
 from pyreto.pareto import pareto_ml_estimator_alpha
@@ -865,17 +865,17 @@ class TestParetoMLEstimator:
         assert round(pareto_ml_estimator_alpha(pareto_losses, 1000, reporting_thresholds=rt), 5) == 4.61698
 ```
 
-- [ ] **Step 2: Run to verify failure**
+- [x] **Step 2: Run to verify failure**
 
 ```bash
 uv run pytest tests/test_pareto.py::TestParetoMLEstimator -v
 ```
 
-- [ ] **Step 3: Implement `pareto_ml_estimator_alpha`**
+- [x] **Step 3: Implement `pareto_ml_estimator_alpha`**
 
 R source is `Functions.R` lines 2814–3026. The MLE solves the log-likelihood using `scipy.optimize.minimize_scalar` or `brentq`. Support: truncated, censored, weighted, heterogeneous reporting thresholds.
 
-- [ ] **Step 4: Run all Pareto tests**
+- [x] **Step 4: Run all Pareto tests**
 
 ```bash
 uv run pytest tests/test_pareto.py -v
@@ -883,13 +883,13 @@ uv run pytest tests/test_pareto.py -v
 
 Expected: All PASS.
 
-- [ ] **Step 5: Run ruff and ty**
+- [x] **Step 5: Run ruff and ty**
 
 ```bash
 uv run ruff check pyreto/pareto.py && uv run ty check pyreto
 ```
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add pyreto/pareto.py tests/test_pareto.py
