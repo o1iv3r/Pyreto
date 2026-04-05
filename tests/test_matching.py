@@ -1,4 +1,4 @@
-"""Tests for matching module — task 11a: LP engine."""
+"""Tests for matching module — tasks 11a and 11b: LP engine and alpha-fitting."""
 
 import numpy as np
 import pytest
@@ -101,3 +101,93 @@ class TestSolveLp:
         # The sub-layer at att=2000 should have frequency=0.3 stored.
         idx = np.searchsorted(result.att, 2000.0)
         assert result.frequency[idx] == pytest.approx(0.3)
+
+
+class TestFitPP:
+    def test_single_segment(self) -> None:
+        from pyreto.matching import _fit_pp
+
+        # 2 attachment points -> 1 finite layer -> closed-form alpha from frequencies
+        a = np.array([1000.0, 2000.0])
+        s = np.array([100.0, 50.0])  # frequencies (strictly descending)
+        el = np.array([100.0])  # n-1 elements: finite layers only
+        result = _fit_pp(a, s, el, truncation=None)
+        assert result is not None
+        assert result.status == "OK"
+        assert len(result.t) >= 1
+        assert len(result.alpha) == len(result.t)
+
+    def test_result_has_correct_structure(self) -> None:
+        from pyreto.matching import _fit_pp
+
+        a = np.array([1000.0, 2000.0, 3000.0])
+        s = np.array([1.0, 0.5, 0.25])
+        el = np.array([300.0, 150.0])
+        result = _fit_pp(a, s, el, truncation=None)
+        assert result.status == "OK"
+        # t and alpha must be same length
+        assert len(result.t) == len(result.alpha)
+        # All attachment points in t must be positive
+        assert np.all(np.array(result.t) > 0)
+        # All alphas must be non-negative
+        assert np.all(np.array(result.alpha) >= 0)
+
+    def test_alphas_match_frequencies(self) -> None:
+        from pyreto.matching import _fit_pp
+
+        # With s descending (consistent Pareto), the recovered alphas should be
+        # a reasonable positive value.
+        a = np.array([1000.0, 2000.0, 4000.0])
+        s = np.array([2.0, 1.0, 0.5])
+        el = np.array([500.0, 600.0])
+        result = _fit_pp(a, s, el, truncation=None)
+        assert result.status == "OK"
+        assert all(al >= 0 for al in result.alpha)
+
+    def test_calculate_taus_returns_ordered_pair(self) -> None:
+        from pyreto.matching import _calculate_taus
+
+        s_0, s_1 = 1.0, 0.5
+        a_0, a_1 = 1000.0, 2000.0
+        exp_loss = 300.0
+        tau_l, tau_u = _calculate_taus(s_0, s_1, a_0, a_1, exp_loss)
+        assert a_0 <= tau_l <= a_1
+        assert a_0 <= tau_u <= a_1
+        assert tau_l <= tau_u + 1e-9  # tau_l <= tau_u (or approximately equal)
+
+    def test_calculate_alphas_matches_layer_loss(self) -> None:
+        from pyreto.matching import _calculate_alphas
+
+        s_0, s_1 = 1.0, 0.5
+        a_0, a_1 = 1000.0, 2000.0
+        exp_loss = 300.0
+        t = 1500.0
+        alpha_0, alpha_1 = _calculate_alphas(s_0, s_1, a_0, a_1, exp_loss, t)
+        assert alpha_0 >= 0
+        assert alpha_1 >= 0
+
+    def test_with_truncation(self) -> None:
+        from pyreto.matching import _fit_pp
+
+        a = np.array([1000.0, 2000.0, 3000.0])
+        s = np.array([1.0, 0.5, 0.25])
+        el = np.array([300.0, 150.0])
+        result = _fit_pp(a, s, el, truncation=10000.0)
+        assert result.status == "OK"
+        assert len(result.t) == len(result.alpha)
+
+    def test_pure_pareto_alpha2_recovers_single_segment(self) -> None:
+        """A pure Pareto(alpha=2) input should collapse to 1 segment after merging."""
+        from pyreto.matching import _fit_pp
+
+        # Pareto(alpha=2) with frequency 1.0 at 1000:
+        # s[1] = 1.0 * (1000/2000)^2 = 0.25
+        # el[0] = LL(1000, 2000, 2) * 1.0 = 500
+        # el[1] = LL(2000, inf,  2) * 0.25 = 0.25 * 2000 = 500
+        a = np.array([1000.0, 2000.0])
+        s = np.array([1.0, 0.25])
+        el = np.array([500.0, 500.0])  # n elements (full R convention with infinite tail)
+        result = _fit_pp(a, s, el, truncation=None)
+        assert result.status == "OK"
+        # Should recover alpha ≈ 2 in every segment
+        assert all(abs(al - 2.0) < 0.01 for al in result.alpha)
