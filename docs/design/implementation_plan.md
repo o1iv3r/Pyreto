@@ -63,8 +63,8 @@ README.md
 | 1 | [chunk_1_project_scaffolding.md](chunk_1_project_scaffolding.md) | uv init, pyproject.toml, ruff, ty, pre-commit, GitHub Actions CI | 1–2 ✅ |
 | 2 | [chunk_2_validation_and_pareto.md](chunk_2_validation_and_pareto.md) | Internal validation helpers, Pareto CDF/PDF/q/r, layer moments, alpha-finding, ML estimator | 3–7 ✅ |
 | 3 | [chunk_3_piecewise_pareto.md](chunk_3_piecewise_pareto.md) | PiecewisePareto CDF/PDF/q/r, layer moments, ML estimator | 8–9 ✅ |
-| 4 | [chunk_4_gen_pareto.md](chunk_4_gen_pareto.md) | Generalized Pareto CDF/PDF/q/r, layer moments, ML estimator | 10 |
-| 5 | [chunk_5_lp_matching.md](chunk_5_lp_matching.md) | LP engine, alpha-fitting engine, `piecewise_pareto_match_layer_losses` | 11a–11c |
+| 4 | [chunk_4_gen_pareto.md](chunk_4_gen_pareto.md) | Generalized Pareto CDF/PDF/q/r, layer moments, ML estimator | 10 ✅ |
+| 5 | [chunk_5_lp_matching.md](chunk_5_lp_matching.md) | LP engine, alpha-fitting engine, `piecewise_pareto_match_layer_losses` | 11a ✅, 11b–11c |
 | 6 | [chunk_6_collective_models.md](chunk_6_collective_models.md) | PPPModel, CollectiveModel protocol, PGPModel | 12–13 |
 | 7 | [chunk_7_fitting_and_api.md](chunk_7_fitting_and_api.md) | Panjer, `local_pareto_alpha`, `fit_references`, `fit_pml_curve`, public API, function mapping | 14–15 |
 | 8 | [chunk_8_documentation.md](chunk_8_documentation.md) | README, mkdocs, vignette, API reference pages, docs CI | 16–17 |
