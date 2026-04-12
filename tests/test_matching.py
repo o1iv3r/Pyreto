@@ -191,3 +191,66 @@ class TestFitPP:
         assert result.status == "OK"
         # Should recover alpha ≈ 2 in every segment
         assert all(abs(al - 2.0) < 0.01 for al in result.alpha)
+
+
+# ---------------------------------------------------------------------------
+# Task 11c: piecewise_pareto_match_layer_losses
+# ---------------------------------------------------------------------------
+
+
+class TestPiecewiseParetoMatchLayerLosses:
+    def setup_method(self) -> None:
+        self.ap = np.array([1000, 2000, 3000, 4000, 5000], dtype=float)
+        self.el = np.array([1000, 900, 800, 600, 500], dtype=float)
+        self.cover = np.append(np.diff(self.ap), np.inf)
+
+    def test_basic_fit(self) -> None:
+        from pyreto.collective_model import layer_mean
+        from pyreto.matching import piecewise_pareto_match_layer_losses
+
+        model = piecewise_pareto_match_layer_losses(self.ap, self.el)
+        assert model.is_valid()
+        np.testing.assert_allclose(layer_mean(model, self.cover, self.ap), self.el, rtol=1e-6)
+
+    def test_truncated_lp(self) -> None:
+        from pyreto.collective_model import layer_mean
+        from pyreto.matching import piecewise_pareto_match_layer_losses
+
+        model = piecewise_pareto_match_layer_losses(self.ap, self.el, truncation=10000)
+        assert model.is_valid()
+        np.testing.assert_allclose(layer_mean(model, self.cover, self.ap), self.el, rtol=1e-6)
+
+    def test_truncated_wd(self) -> None:
+        from pyreto.collective_model import layer_mean
+        from pyreto.matching import piecewise_pareto_match_layer_losses
+
+        model = piecewise_pareto_match_layer_losses(
+            self.ap, self.el, truncation=10000, truncation_type="wd"
+        )
+        assert model.is_valid()
+        np.testing.assert_allclose(layer_mean(model, self.cover, self.ap), self.el, rtol=1e-6)
+
+    def test_with_frequencies(self) -> None:
+        from pyreto.collective_model import excess_frequency, layer_mean
+        from pyreto.matching import piecewise_pareto_match_layer_losses
+
+        fqs = np.array([1.1, 0.95, np.nan, np.nan, 0.5])
+        model = piecewise_pareto_match_layer_losses(
+            self.ap, self.el, frequencies=fqs, truncation=10000
+        )
+        assert model.is_valid()
+        np.testing.assert_allclose(layer_mean(model, self.cover, self.ap), self.el, rtol=1e-6)
+        np.testing.assert_allclose(
+            excess_frequency(model, np.array([1000.0, 2000.0, 5000.0])),
+            [1.1, 0.95, 0.5],
+            rtol=1e-3,
+        )
+
+    def test_only_two_layers(self) -> None:
+        from pyreto.matching import piecewise_pareto_match_layer_losses
+
+        model = piecewise_pareto_match_layer_losses(
+            np.array([1000, 2000], dtype=float),
+            np.array([100, 100], dtype=float),
+        )
+        assert model.alpha == pytest.approx(2)
