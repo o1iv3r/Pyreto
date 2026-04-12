@@ -1,19 +1,16 @@
 # Pyreto
 
-> **Warning:** This package is in alpha. It is intended for learning and experimentation only — do not use it in production.
-
 Pyreto is a Python library for modelling large insurance losses, built around the Pareto family of heavy-tailed distributions. It is a port of the R [Pareto](https://github.com/ulrichriegel/Pareto) package by Ulrich Riegel.
 
 In reinsurance pricing, the central question is: given that a loss has already exceeded some threshold, how large is it likely to be — and what does that mean for a specific layer of cover? The Pareto distribution is the natural answer. It is heavy-tailed (large losses are far more probable than a normal distribution would suggest), and it has a simple scale-invariance property: above any attachment point, the excess looks Pareto again. This makes it the standard severity model for excess-of-loss (XL) reinsurance.
 
-## Overview
+> **Warning:** This package is in alpha. It is intended for learning and experimentation only — do not use it in production.
 
-- **Pareto distribution** — CDF, PDF, quantile, random sampling, layer moments, ML estimation, alpha-finding utilities
-- **Piecewise Pareto** — multi-segment Pareto with breakpoints; same suite of functions
-- **Generalized Pareto** — parameterised by `(t, alpha_ini, alpha_tail)`
-- **LP layer-loss matching** — `piecewise_pareto_match_layer_losses` recovers a piecewise Pareto from observed layer expected losses
-- **Collective models** — `PPPModel` and `PGPModel` with layer mean, variance, and simulation
-- **Fitting utilities** — `local_pareto_alpha`, Panjer distribution, `fit_references`, `fit_pml_curve`
+## Documentation
+
+Full documentation, including a vignette and API reference, is available at <https://o1iv3r.github.io/Pyreto>.
+
+> **Note:** Do not confuse this package with [pyreto](https://pypi.org/project/pyreto/), a tail risk management library with Monte Carlo simulation (classless functional API).
 
 ## Installation
 
