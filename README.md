@@ -8,7 +8,9 @@ In reinsurance pricing, the central question is: given that a loss has already e
 
 ## Documentation
 
-A vignette and API reference are included. To browse them locally:
+Full documentation is hosted at **https://o1iv3r.github.io/Pyreto/**.
+
+A vignette and API reference are also included. To browse them locally:
 
 ```bash
 uv sync --group docs
@@ -17,9 +19,9 @@ mkdocs serve
 
 Then open <http://127.0.0.1:8000> in your browser.
 
-> **Note:** Do not confuse this package with [pyreto](https://pypi.org/project/pyreto/), a tail risk management library with Monte Carlo simulation (classless functional API).
-
 ## Installation
+
+> **Note:** Do not confuse this package with [pyreto](https://pypi.org/project/pyreto/), a tail risk management library with Monte Carlo simulation (classless functional API).
 
 ```bash
 pip install pyreto
