@@ -1,0 +1,29 @@
+site_name: Pyreto
+site_url: https://o1iv3r.github.io/Pyreto
+repo_url: https://github.com/o1iv3r/Pyreto
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - content.code.copy
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: numpy
+            show_source: true
+
+nav:
+  - Home: index.md
+  - Vignette: vignette.md
+  - Function Mapping: function_mapping.md
+  - API Reference:
+      - Pareto: api/pareto.md
+      - PiecewisePareto: api/piecewise_pareto.md
+      - GenPareto: api/gen_pareto.md
+      - Models: api/models.md
+      - Fitting: api/fitting.md
