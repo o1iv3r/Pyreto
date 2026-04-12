@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import numpy as np
+import pytest
 
 from pyreto.ppp_model import PPPModel
 
@@ -82,3 +83,109 @@ class TestPPPModelLayerMean:
         assert len(losses) == 100
         # Each element is a list (possibly empty)
         assert all(isinstance(yr, list) for yr in losses)
+
+
+class TestPanjerDistribution:
+    def test_poisson_mean_and_var(self) -> None:
+        from pyreto.collective_model import layer_mean, layer_var
+
+        model = PPPModel(fq=10.0, t=np.array([1000.0]), alpha=np.array([2.0]), dispersion=1.0)
+        assert layer_mean(model, 1.0, 0.0) == pytest.approx(10.0)
+        assert layer_var(model, 1.0, 0.0) == pytest.approx(10.0)
+
+    def test_underdispersed_var(self) -> None:
+        from pyreto.collective_model import layer_mean, layer_var
+
+        model = PPPModel(fq=10.0, t=np.array([1000.0]), alpha=np.array([2.0]), dispersion=0.5)
+        assert layer_mean(model, 1.0, 0.0) == pytest.approx(10.0)
+        assert layer_var(model, 1.0, 0.0) == pytest.approx(5.0)
+
+    def test_overdispersed_var(self) -> None:
+        from pyreto.collective_model import layer_mean, layer_var
+
+        model = PPPModel(fq=10.0, t=np.array([1000.0]), alpha=np.array([2.0]), dispersion=2.0)
+        assert layer_mean(model, 1.0, 0.0) == pytest.approx(10.0)
+        assert layer_var(model, 1.0, 0.0) == pytest.approx(20.0)
+
+
+class TestPPPModelLayerSdVar:
+    """Layer Sd/Var values from R test_functions_PPP_Model.R."""
+
+    def setup_method(self) -> None:
+        from pyreto.matching import piecewise_pareto_match_layer_losses
+
+        ap = np.array([1000, 2000, 3000, 4000, 5000], dtype=float)
+        el = np.array([1000, 900, 800, 600, 500], dtype=float)
+        fqs = np.array([1.1, 0.95, np.nan, np.nan, 0.5])
+        self._ap = ap
+        self._el = el
+        self._fqs = fqs
+        self._match = piecewise_pareto_match_layer_losses
+
+    def test_layer_sd_dispersion_1(self) -> None:
+        from pyreto.collective_model import layer_sd
+
+        model = self._match(
+            self._ap, self._el, frequencies=self._fqs, truncation=10000, truncation_type="wd"
+        )
+        assert round(float(layer_sd(model, 1000.0, 2000.0)), 3) == pytest.approx(939.264)
+
+    def test_layer_var_dispersion_1(self) -> None:
+        from pyreto.collective_model import layer_var
+
+        model = self._match(
+            self._ap, self._el, frequencies=self._fqs, truncation=10000, truncation_type="wd"
+        )
+        assert round(float(layer_var(model, 1000.0, 2000.0)), 3) == pytest.approx(882217.474)
+
+    def test_layer_sd_dispersion_063(self) -> None:
+        from pyreto.collective_model import layer_sd
+
+        model = self._match(
+            self._ap,
+            self._el,
+            frequencies=self._fqs,
+            truncation=10000,
+            truncation_type="wd",
+            dispersion=0.63,
+        )
+        assert round(float(layer_sd(model, 1000.0, 2000.0)), 3) == pytest.approx(780.873)
+
+    def test_layer_var_dispersion_063(self) -> None:
+        from pyreto.collective_model import layer_var
+
+        model = self._match(
+            self._ap,
+            self._el,
+            frequencies=self._fqs,
+            truncation=10000,
+            truncation_type="wd",
+            dispersion=0.63,
+        )
+        assert round(float(layer_var(model, 1000.0, 2000.0)), 3) == pytest.approx(609762.928)
+
+    def test_layer_sd_dispersion_2(self) -> None:
+        from pyreto.collective_model import layer_sd
+
+        model = self._match(
+            self._ap,
+            self._el,
+            frequencies=self._fqs,
+            truncation=10000,
+            truncation_type="wd",
+            dispersion=2.0,
+        )
+        assert round(float(layer_sd(model, 1000.0, 2000.0)), 3) == pytest.approx(1272.235)
+
+    def test_layer_var_dispersion_2(self) -> None:
+        from pyreto.collective_model import layer_var
+
+        model = self._match(
+            self._ap,
+            self._el,
+            frequencies=self._fqs,
+            truncation=10000,
+            truncation_type="wd",
+            dispersion=2.0,
+        )
+        assert round(float(layer_var(model, 1000.0, 2000.0)), 3) == pytest.approx(1618581.110)

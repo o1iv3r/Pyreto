@@ -180,6 +180,11 @@ class TestParetoLayerVar:
             1765367.59288524
         )
 
+    def test_alpha_zero_with_truncation(self) -> None:
+        assert pareto_layer_var(2000, 1000, alpha=0, truncation=5000, t=500) == pytest.approx(
+            667015.32799764269
+        )
+
 
 class TestParetoExtrapolation:
     def test_ratio(self) -> None:
@@ -215,14 +220,35 @@ class TestParetoFindAlpha:
     def test_btw_layers_halved(self) -> None:
         assert pareto_find_alpha_btw_layers(1000, 1000, 100, 2000, 2000, 50) == pytest.approx(2)
 
+    def test_btw_layers_with_truncation(self) -> None:
+        assert pareto_find_alpha_btw_layers(
+            1000, 1000, 100, 2000, 2000, 50, truncation=5000
+        ) == pytest.approx(1.3871313763147217)
+
     def test_btw_fq_layer(self) -> None:
         assert pareto_find_alpha_btw_fq_layer(1000, 1, 2000, 2000, 100) == pytest.approx(
             2.9330042139247037
         )
 
+    def test_btw_fq_layer_att_eq_threshold(self) -> None:
+        assert pareto_find_alpha_btw_fq_layer(1000, 1, 1000, 1000, 500) == pytest.approx(2)
+
+    def test_btw_fq_layer_threshold_above_att(self) -> None:
+        assert pareto_find_alpha_btw_fq_layer(2000, 0.25, 1000, 1000, 500) == pytest.approx(2)
+
+    def test_btw_fq_layer_with_truncation(self) -> None:
+        assert pareto_find_alpha_btw_fq_layer(
+            1000, 1, 1000, 1000, 500, truncation=5000
+        ) == pytest.approx(1.8363401129702193)
+
     def test_btw_fqs_basic(self) -> None:
         assert pareto_find_alpha_btw_fqs(1000, 1, 2000, 0.5) == pytest.approx(1)
         assert pareto_find_alpha_btw_fqs(2000, 0.25, 1000, 1) == pytest.approx(2)
+
+    def test_btw_fqs_with_truncation(self) -> None:
+        assert pareto_find_alpha_btw_fqs(2000, 0.25, 1000, 1, truncation=4000) == pytest.approx(
+            1.5849625007211574
+        )
 
 
 class TestParetoMLEstimator:
@@ -244,3 +270,45 @@ class TestParetoMLEstimator:
         rt = np.array([1000, 1000, 1000, 1200, 1200, 1000, 1500, 1000, 1000, 1000], dtype=float)
         result = pareto_ml_estimator_alpha(pareto_losses, 1000, reporting_thresholds=rt)
         assert round(result, 5) == 4.61698
+
+    def test_with_reporting_thresholds_weights_truncation(self, pareto_losses: np.ndarray) -> None:
+        rt = np.array([1000, 1000, 1000, 1200, 1200, 1000, 1500, 1000, 1000, 1000], dtype=float)
+        w = np.ones(len(pareto_losses))
+        w[:2] = 2
+        result = pareto_ml_estimator_alpha(
+            pareto_losses, 1000, reporting_thresholds=rt, weights=w, truncation=3000
+        )
+        assert round(result, 5) == 4.20722
+
+    def test_with_censoring_reporting_thresholds(self, pareto_losses: np.ndarray) -> None:
+        rt = np.array([1000, 1000, 1000, 1200, 1200, 1000, 1500, 1000, 1000, 1000], dtype=float)
+        censored = np.zeros(len(pareto_losses), dtype=bool)
+        censored[:2] = True
+        result = pareto_ml_estimator_alpha(
+            pareto_losses, 1000, reporting_thresholds=rt, is_censored=censored
+        )
+        assert round(result, 5) == 3.69358
+
+    def test_with_censoring_rt_weights_truncation(self, pareto_losses: np.ndarray) -> None:
+        rt = np.array([1000, 1000, 1000, 1200, 1200, 1000, 1500, 1000, 1000, 1000], dtype=float)
+        w = np.ones(len(pareto_losses))
+        w[:2] = 2
+        censored = np.zeros(len(pareto_losses), dtype=bool)
+        censored[:2] = True
+        result = pareto_ml_estimator_alpha(
+            pareto_losses,
+            1000,
+            reporting_thresholds=rt,
+            is_censored=censored,
+            weights=w,
+            truncation=3000,
+        )
+        assert round(result, 5) == 2.47743
+
+    def test_weights_with_truncation_consistency(self, pareto_losses: np.ndarray) -> None:
+        losses2 = np.concatenate([pareto_losses, pareto_losses[:2]])
+        w = np.ones(len(pareto_losses))
+        w[:2] = 2
+        assert round(
+            pareto_ml_estimator_alpha(pareto_losses, 1000, weights=w, truncation=3000), 5
+        ) == round(pareto_ml_estimator_alpha(losses2, 1000, truncation=3000), 5)

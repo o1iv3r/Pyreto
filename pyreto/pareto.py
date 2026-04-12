@@ -712,9 +712,8 @@ def pareto_find_alpha_btw_fq_layer(
 
     def _f(alpha: float) -> float:
         if attachment_point < threshold:
-            fq_factor = 1.0 / float(
-                1 - p_pareto(threshold, attachment_point, alpha, truncation=truncation)
-            )
+            denom = float(1 - p_pareto(threshold, attachment_point, alpha, truncation=truncation))
+            fq_factor = np.inf if denom == 0.0 else 1.0 / denom
         else:
             fq_factor = float(
                 1 - p_pareto(attachment_point, threshold, alpha, truncation=truncation)
