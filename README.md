@@ -8,7 +8,14 @@ In reinsurance pricing, the central question is: given that a loss has already e
 
 ## Documentation
 
-Full documentation, including a vignette and API reference, is available at <https://o1iv3r.github.io/Pyreto>.
+A vignette and API reference are included. To browse them locally:
+
+```bash
+uv sync --group docs
+mkdocs serve
+```
+
+Then open <http://127.0.0.1:8000> in your browser.
 
 > **Note:** Do not confuse this package with [pyreto](https://pypi.org/project/pyreto/), a tail risk management library with Monte Carlo simulation (classless functional API).
 
@@ -122,6 +129,22 @@ When you have an empirical loss distribution (or a parametric severity assumptio
 ```python
 x = np.arange(1, 11) * 1e6
 pyreto.local_pareto_alpha(x, "norm", mean=5e6, sd=2e6)
+```
+
+## Contributing
+
+Contributions are welcome. To get started, clone the repo and install the development dependencies:
+
+```bash
+git clone https://github.com/o1iv3r/Pyreto.git
+cd Pyreto
+uv sync --group dev
+```
+
+This installs pytest, ruff, ty, and pre-commit. Run the test suite with:
+
+```bash
+uv run pytest
 ```
 
 ## Attribution

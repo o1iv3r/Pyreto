@@ -408,10 +408,13 @@ def _pareto_layer_var_scalar(
         p = 1 - p_pareto(truncation, eff_attachment, alpha)
         sm = (sm - p * eff_cover**2) / (1 - p)
 
-    # Account for t < attachment: multiply by survival probability
-    trunc_arg = truncation if finite_trunc else None
-    p_surv = 1 - p_pareto(eff_attachment, t, alpha, truncation=trunc_arg)
-    sm = float(p_surv) * sm
+    # Account for t < attachment: multiply by survival probability.
+    # Skip when finite_trunc and alpha == 0: p_pareto would produce 0/0 and
+    # the special case below overwrites sm entirely anyway.
+    if not (finite_trunc and alpha == 0):
+        trunc_arg = truncation if finite_trunc else None
+        p_surv = 1 - p_pareto(eff_attachment, t, alpha, truncation=trunc_arg)
+        sm = float(p_surv) * sm
 
     if finite_trunc and alpha == 0:
         # Special case: use indefinite integral formula
