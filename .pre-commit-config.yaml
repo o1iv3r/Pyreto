@@ -1,0 +1,22 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.6
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: local
+    hooks:
+      - id: ty
+        name: ty type check
+        entry: uv run ty check pyreto
+        language: system
+        pass_filenames: false
+
+      - id: pytest-fast
+        name: pytest fast tests
+        entry: bash -c 'uv run pytest tests/ -x -q --ignore=tests/test_fitting.py; rc=$?; [ $rc -eq 5 ] && exit 0 || exit $rc'
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
