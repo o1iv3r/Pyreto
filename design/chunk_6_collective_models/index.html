@@ -1,0 +1,1010 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://o1iv3r.github.io/Pyreto/design/chunk_6_collective_models/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
+    
+    
+      
+        <title>Chunk 6 collective models - Pyreto</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#chunk-6-collective-models" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Pyreto" class="md-header__button md-logo" aria-label="Pyreto" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Pyreto
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Chunk 6 collective models
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/o1iv3r/Pyreto" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../vignette/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Vignette
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../function_mapping/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Function Mapping
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api/pareto/" class="md-tabs__link">
+          
+  
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Pyreto" class="md-nav__button md-logo" aria-label="Pyreto" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Pyreto
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/o1iv3r/Pyreto" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vignette/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vignette
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../function_mapping/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Function Mapping
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/pareto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pareto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/piecewise_pareto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PiecewisePareto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/gen_pareto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GenPareto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/fitting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fitting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#chunk-6-collective-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chunk 6: Collective Models
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Chunk 6: Collective Models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#task-12-pppmodel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 12: PPPModel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-13-collectivemodel-protocol-and-dispatch-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 13: CollectiveModel protocol and dispatch functions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>Chunk 6 collective models</h1>
+
+<h2 id="chunk-6-collective-models">Chunk 6: Collective Models</h2>
+<h3 id="task-12-pppmodel">Task 12: PPPModel</h3>
+<p><strong>Files:</strong>
+- Create: <code>pyreto/ppp_model.py</code>
+- Create: <code>tests/test_ppp_model.py</code></p>
+<ul>
+<li>[ ] <strong>Step 1: Write failing tests (ported from <code>test_functions_PPP_Model.R</code>)</strong></li>
+</ul>
+<pre><code class="language-python"># tests/test_ppp_model.py
+import numpy as np
+import pytest
+from pyreto.ppp_model import PPPModel
+from pyreto.collective_model import (
+    layer_mean, layer_var, layer_sd, excess_frequency, simulate_losses
+)
+
+
+class TestPPPModelCreation:
+    def test_valid_model(self):
+        model = PPPModel(
+            fq=1.0,
+            t=np.array([1000.0]),
+            alpha=np.array([2.0]),
+        )
+        assert model.is_valid()
+
+    def test_invalid_model_negative_fq(self):
+        model = PPPModel(fq=-1.0, t=np.array([1000.0]), alpha=np.array([2.0]))
+        assert not model.is_valid()
+
+    def test_repr(self):
+        model = PPPModel(fq=1.0, t=np.array([1000.0]), alpha=np.array([2.0]))
+        assert &quot;PPPModel&quot; in repr(model)
+
+
+class TestPPPModelLayerMean:
+    def setup_method(self):
+        ap = np.array([1000, 2000, 3000, 4000, 5000], dtype=float)
+        el = np.array([1000, 900, 800, 600, 500], dtype=float)
+        from pyreto.matching import piecewise_pareto_match_layer_losses
+        self.model = piecewise_pareto_match_layer_losses(ap, el)
+        self.cover = np.append(np.diff(ap), np.inf)
+        self.ap = ap
+        self.el = el
+
+    def test_layer_means_match_targets(self):
+        np.testing.assert_allclose(
+            layer_mean(self.model, self.cover, self.ap), self.el, rtol=1e-8
+        )
+
+    def test_layer_var(self):
+        result = layer_var(self.model, self.cover, self.ap)
+        assert np.all(result &gt;= 0)
+
+    def test_excess_frequency_monotone(self):
+        freqs = excess_frequency(self.model, np.array([1000, 2000, 3000, 4000, 5000]))
+        assert np.all(np.diff(freqs) &lt;= 0)
+
+    def test_simulate_losses(self):
+        losses = simulate_losses(self.model, nyears=100)
+        assert isinstance(losses, list)
+        assert len(losses) == 100
+</code></pre>
+<ul>
+<li>[ ] <strong>Step 2: Run to verify failure</strong></li>
+</ul>
+<pre><code class="language-bash">uv run pytest tests/test_ppp_model.py -v
+</code></pre>
+<ul>
+<li>[ ] <strong>Step 3: Implement <code>pyreto/ppp_model.py</code></strong></li>
+</ul>
+<p>Port <code>PPPModel.R</code>. Use a Python dataclass:</p>
+<pre><code class="language-python">from dataclasses import dataclass, field
+import numpy as np
+
+@dataclass
+class PPPModel:
+    &quot;&quot;&quot;Piecewise Pareto collective risk model.
+
+    Parameters
+    ----------
+    fq : float or None
+        Claim frequency (expected number of claims above t[0] per year).
+    t : np.ndarray
+        Threshold breakpoints of the piecewise Pareto.
+    alpha : np.ndarray
+        Shape parameters for each piece.
+    truncation : float or None
+        Upper truncation.
+    truncation_type : str
+        'lp' (last piece) or 'wd' (whole distribution).
+    dispersion : float
+        Overdispersion parameter for the claim count distribution (1 = Poisson).
+    status : int
+        0 = OK.
+    comment : str
+        Status message.
+    &quot;&quot;&quot;
+    fq: float | None = None
+    t: np.ndarray = field(default_factory=lambda: np.array([]))
+    alpha: np.ndarray = field(default_factory=lambda: np.array([]))
+    truncation: float | None = None
+    truncation_type: str = &quot;lp&quot;
+    dispersion: float = 1.0
+    status: int = 0
+    comment: str = &quot;OK&quot;
+
+    def is_valid(self, comment: bool = False) -&gt; bool:
+        &quot;&quot;&quot;Return True if the model parameters are valid.&quot;&quot;&quot;
+        ...
+
+    def __repr__(self) -&gt; str:
+        ...
+</code></pre>
+<p>Port layer loss/var/sd/frequency/simulate methods from <code>PPPModel.R</code> as standalone functions in <code>collective_model.py</code> (see Task 13).</p>
+<ul>
+<li>[ ] <strong>Step 4: Run tests</strong></li>
+</ul>
+<pre><code class="language-bash">uv run pytest tests/test_ppp_model.py -v
+</code></pre>
+<ul>
+<li>[ ] <strong>Step 5: Commit</strong></li>
+</ul>
+<pre><code class="language-bash">git add pyreto/ppp_model.py tests/test_ppp_model.py
+git commit -m &quot;feat: add PPPModel dataclass&quot;
+</code></pre>
+<hr />
+<h3 id="task-13-collectivemodel-protocol-and-dispatch-functions">Task 13: CollectiveModel protocol and dispatch functions</h3>
+<p><strong>Files:</strong>
+- Create: <code>pyreto/collective_model.py</code>
+- Modify: <code>pyreto/pgp_model.py</code>
+- Create: <code>tests/test_collective_model.py</code></p>
+<p>R uses S3 dispatch (<code>UseMethod</code>). Python equivalent: a <code>Protocol</code> defining the interface, with free functions that dispatch based on type.</p>
+<ul>
+<li>[ ] <strong>Step 1: Write failing tests</strong></li>
+</ul>
+<pre><code class="language-python"># tests/test_collective_model.py
+import numpy as np
+import pytest
+from pyreto.collective_model import layer_mean, layer_var, layer_sd, excess_frequency, simulate_losses
+from pyreto.ppp_model import PPPModel
+from pyreto.pgp_model import PGPModel
+
+
+class TestCollectiveModelDispatch:
+    def test_layer_mean_ppp(self):
+        from pyreto.matching import piecewise_pareto_match_layer_losses
+        ap = np.array([1000, 2000, 3000, 4000, 5000], dtype=float)
+        el = np.array([1000, 900, 800, 600, 500], dtype=float)
+        model = piecewise_pareto_match_layer_losses(ap, el)
+        cover = np.append(np.diff(ap), np.inf)
+        np.testing.assert_allclose(layer_mean(model, cover, ap), el, rtol=1e-8)
+
+    def test_layer_mean_ppp_scalar(self):
+        from pyreto.matching import piecewise_pareto_match_layer_losses
+        model = piecewise_pareto_match_layer_losses(
+            np.array([1000, 2000], dtype=float),
+            np.array([100, 100], dtype=float),
+        )
+        result = layer_mean(model, cover=np.inf, attachment_point=0)
+        assert result &gt; 0
+</code></pre>
+<ul>
+<li>[ ] <strong>Step 2: Run to verify failure</strong></li>
+</ul>
+<pre><code class="language-bash">uv run pytest tests/test_collective_model.py -v
+</code></pre>
+<p>Expected: <code>ImportError</code>.</p>
+<ul>
+<li>[ ] <strong>Step 3: Implement <code>pyreto/collective_model.py</code></strong></li>
+</ul>
+<pre><code class="language-python">&quot;&quot;&quot;Collective model protocol and dispatch functions.
+
+Mirrors CollectiveModelMethods.R. Provides free functions that dispatch
+to PPPModel or PGPModel implementations.
+&quot;&quot;&quot;
+from __future__ import annotations
+from typing import Protocol, runtime_checkable
+import numpy as np
+from numpy.typing import ArrayLike
+
+
+@runtime_checkable
+class CollectiveModel(Protocol):
+    &quot;&quot;&quot;Protocol for collective risk models (PPPModel, PGPModel).&quot;&quot;&quot;
+    fq: float | None
+    t: np.ndarray
+    alpha: np.ndarray
+
+
+def layer_mean(
+    model: CollectiveModel,
+    cover: ArrayLike = np.inf,
+    attachment_point: ArrayLike = 0,
+) -&gt; np.ndarray:
+    &quot;&quot;&quot;Expected aggregate loss in a reinsurance layer.
+
+    Dispatches to the appropriate implementation based on model type.
+    &quot;&quot;&quot;
+    from pyreto.ppp_model import PPPModel
+    from pyreto.pgp_model import PGPModel
+
+    if isinstance(model, PPPModel):
+        return _ppp_layer_mean(cover, attachment_point, model)
+    elif isinstance(model, PGPModel):
+        return _pgp_layer_mean(cover, attachment_point, model)
+    raise TypeError(f&quot;Unsupported model type: {type(model)}&quot;)
+
+# ... layer_var, layer_sd, excess_frequency, simulate_losses follow same pattern
+</code></pre>
+<ul>
+<li>[ ] <strong>Step 3: Write failing PGP model tests</strong></li>
+</ul>
+<pre><code class="language-python"># tests/test_pgp_model.py
+import numpy as np
+import pytest
+from pyreto.pgp_model import PGPModel
+from pyreto.collective_model import layer_mean, layer_var, layer_sd, excess_frequency, simulate_losses
+
+
+class TestPGPModelCreation:
+    def test_valid_model(self):
+        model = PGPModel(fq=1.0, t=1000.0, alpha_ini=1.5, alpha_tail=2.0)
+        assert model.is_valid()
+
+    def test_invalid_negative_fq(self):
+        model = PGPModel(fq=-1.0, t=1000.0, alpha_ini=1.5, alpha_tail=2.0)
+        assert not model.is_valid()
+
+    def test_invalid_alpha_ini(self):
+        model = PGPModel(fq=1.0, t=1000.0, alpha_ini=0.0, alpha_tail=2.0)
+        assert not model.is_valid()
+
+    def test_repr(self):
+        model = PGPModel(fq=1.0, t=1000.0, alpha_ini=1.5, alpha_tail=2.0)
+        assert &quot;PGPModel&quot; in repr(model)
+
+
+class TestPGPModelDispatch:
+    def setup_method(self):
+        self.model = PGPModel(fq=0.5, t=1000.0, alpha_ini=1.5, alpha_tail=2.0)
+
+    def test_layer_mean_positive(self):
+        result = layer_mean(self.model, cover=9000.0, attachment_point=1000.0)
+        assert float(result) &gt; 0
+
+    def test_layer_var_nonnegative(self):
+        result = layer_var(self.model, cover=9000.0, attachment_point=1000.0)
+        assert float(result) &gt;= 0
+
+    def test_layer_sd_equals_sqrt_var(self):
+        v = layer_var(self.model, cover=9000.0, attachment_point=1000.0)
+        sd = layer_sd(self.model, cover=9000.0, attachment_point=1000.0)
+        assert float(sd) == pytest.approx(float(np.sqrt(v)))
+
+    def test_excess_frequency_monotone(self):
+        freqs = excess_frequency(self.model, x=np.array([1000, 2000, 3000, 5000], dtype=float))
+        assert np.all(np.diff(freqs) &lt;= 0)
+
+    def test_simulate_losses_returns_list(self):
+        result = simulate_losses(self.model, nyears=50)
+        assert isinstance(result, list)
+        assert len(result) == 50
+</code></pre>
+<ul>
+<li>[ ] <strong>Step 4: Run to verify failure</strong></li>
+</ul>
+<pre><code class="language-bash">uv run pytest tests/test_pgp_model.py -v
+</code></pre>
+<p>Expected: <code>ImportError</code>.</p>
+<ul>
+<li>[ ] <strong>Step 5: Implement <code>pyreto/pgp_model.py</code></strong> (port <code>PGPModel.R</code>)</li>
+</ul>
+<p>Similar to <code>PPPModel</code> but parameterised by <code>(t, alpha_ini, alpha_tail)</code> — see <code>PGPModel.R</code> for the dataclass fields and validation.</p>
+<ul>
+<li>[ ] <strong>Step 6: Run all collective model tests</strong></li>
+</ul>
+<pre><code class="language-bash">uv run pytest tests/test_ppp_model.py tests/test_pgp_model.py tests/test_collective_model.py -v
+</code></pre>
+<p>Expected: All PASS.</p>
+<ul>
+<li>[ ] <strong>Step 7: Commit</strong></li>
+</ul>
+<pre><code class="language-bash">git add pyreto/collective_model.py pyreto/pgp_model.py tests/test_collective_model.py tests/test_pgp_model.py
+git commit -m &quot;feat: add PGPModel and CollectiveModel dispatch protocol&quot;
+</code></pre>
+<hr />
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

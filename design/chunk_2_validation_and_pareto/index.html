@@ -1,0 +1,1602 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://o1iv3r.github.io/Pyreto/design/chunk_2_validation_and_pareto/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
+    
+    
+      
+        <title>Chunk 2 validation and pareto - Pyreto</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#chunk-2-validation-and-pareto-distribution" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Pyreto" class="md-header__button md-logo" aria-label="Pyreto" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Pyreto
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Chunk 2 validation and pareto
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/o1iv3r/Pyreto" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../vignette/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Vignette
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../function_mapping/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Function Mapping
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api/pareto/" class="md-tabs__link">
+          
+  
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Pyreto" class="md-nav__button md-logo" aria-label="Pyreto" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Pyreto
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/o1iv3r/Pyreto" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vignette/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vignette
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../function_mapping/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Function Mapping
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/pareto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pareto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/piecewise_pareto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PiecewisePareto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/gen_pareto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GenPareto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/fitting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fitting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#chunk-2-validation-and-pareto-distribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chunk 2: Validation and Pareto Distribution
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Chunk 2: Validation and Pareto Distribution">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#task-3-internal-validation-helpers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 3: Internal validation helpers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-4-pareto-distribution-cdf-pdf-quantile-random-sampling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 4: Pareto distribution — CDF, PDF, quantile, random sampling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-5-pareto-distribution-layer-moments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 5: Pareto distribution — layer moments
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-6-pareto-distribution-alpha-finding-and-extrapolation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 6: Pareto distribution — alpha-finding and extrapolation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-7-pareto-ml-estimator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 7: Pareto ML estimator
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>Chunk 2 validation and pareto</h1>
+
+<h2 id="chunk-2-validation-and-pareto-distribution">Chunk 2: Validation and Pareto Distribution</h2>
+<h3 id="task-3-internal-validation-helpers">Task 3: Internal validation helpers</h3>
+<p><strong>Files:</strong>
+- Create: <code>pyreto/_validation.py</code>
+- Create: <code>tests/conftest.py</code></p>
+<p>These mirror <code>ValidationFunctions.R</code>. They are internal (<code>_</code> prefix) — not part of the public API.</p>
+<ul>
+<li>[x] <strong>Step 1: Create <code>tests/conftest.py</code></strong></li>
+</ul>
+<pre><code class="language-python">&quot;&quot;&quot;Shared test fixtures.&quot;&quot;&quot;
+import numpy as np
+import pytest
+
+
+@pytest.fixture
+def pareto_losses() -&gt; np.ndarray:
+    &quot;&quot;&quot;Reference loss sample from R test suite.&quot;&quot;&quot;
+    return np.array([
+        1622.49986584698, 1025.1735923535, 1142.67198754259,
+        1598.2131674777, 1369.79742768744, 1006.5249344124,
+        2019.3663238659, 1007.2758879241, 1377.79293040511,
+        1605.21438984656,
+    ])
+</code></pre>
+<ul>
+<li>[x] <strong>Step 2: Write failing tests for validation helpers</strong></li>
+</ul>
+<pre><code class="language-python"># tests/test_validation.py  (internal, not user-facing)
+import numpy as np
+import pytest
+from pyreto._validation import (
+    is_positive_vector,
+    is_nonnegative_finite_vector,
+    is_positive_finite_number,
+    is_nonnegative_finite_number,
+    valid_parameters_pareto,
+    valid_parameters_piecewise_pareto,
+    valid_parameters_gen_pareto,
+)
+
+
+def test_is_positive_vector():
+    assert is_positive_vector(np.array([1.0, 2.0]))
+    assert not is_positive_vector(np.array([0.0, 1.0]))
+    assert not is_positive_vector(np.array([-1.0, 2.0]))
+    assert not is_positive_vector(np.array([np.nan, 1.0]))
+
+
+def test_is_nonnegative_finite_vector():
+    assert is_nonnegative_finite_vector(np.array([0.0, 1.0]))
+    assert not is_nonnegative_finite_vector(np.array([-1.0, 1.0]))
+    assert not is_nonnegative_finite_vector(np.array([np.inf, 1.0]))
+
+
+def test_is_positive_finite_number():
+    assert is_positive_finite_number(1.0)
+    assert not is_positive_finite_number(0.0)
+    assert not is_positive_finite_number(np.inf)
+    assert not is_positive_finite_number(-1.0)
+
+
+def test_valid_parameters_pareto():
+    assert valid_parameters_pareto(t=1000.0, alpha=2.0, truncation=None)
+    assert not valid_parameters_pareto(t=0.0, alpha=2.0, truncation=None)
+    assert not valid_parameters_pareto(t=1000.0, alpha=-1.0, truncation=None)
+    assert valid_parameters_pareto(t=1000.0, alpha=2.0, truncation=5000.0)
+    assert not valid_parameters_pareto(t=1000.0, alpha=2.0, truncation=500.0)  # truncation &lt;= t
+
+
+def test_valid_parameters_piecewise_pareto():
+    # interior alpha=0 is allowed; last alpha must be &gt; 0
+    assert valid_parameters_piecewise_pareto(
+        t=[1000, 2000], alpha=[0, 1.5], truncation=None, truncation_type=&quot;lp&quot;
+    )
+    assert not valid_parameters_piecewise_pareto(
+        t=[1000, 2000], alpha=[1, 0], truncation=None, truncation_type=&quot;lp&quot;
+    )  # last alpha is zero
+    # truncation must exceed max(t), not just t[0]
+    assert not valid_parameters_piecewise_pareto(
+        t=[1000, 5000], alpha=[1, 2], truncation=3000, truncation_type=&quot;lp&quot;
+    )  # 3000 &lt; max(t)=5000
+    assert valid_parameters_piecewise_pareto(
+        t=[1000, 5000], alpha=[1, 2], truncation=10000, truncation_type=&quot;lp&quot;
+    )
+</code></pre>
+<ul>
+<li>[x] <strong>Step 3: Run to verify failure</strong></li>
+</ul>
+<pre><code class="language-bash">uv run pytest tests/test_validation.py -v
+</code></pre>
+<p>Expected: <code>ImportError</code> or <code>ModuleNotFoundError</code>.</p>
+<ul>
+<li>[x] <strong>Step 4: Implement <code>pyreto/_validation.py</code></strong></li>
+</ul>
+<pre><code class="language-python">&quot;&quot;&quot;Internal input validation helpers.
+
+Mirrors R's ValidationFunctions.R. All functions are private (prefixed _).
+These are not part of the public API.
+&quot;&quot;&quot;
+from __future__ import annotations
+
+import warnings
+import numpy as np
+from numpy.typing import ArrayLike
+
+
+def is_positive_vector(x: ArrayLike) -&gt; bool:
+    &quot;&quot;&quot;Return True if x is an array of strictly positive finite numbers.&quot;&quot;&quot;
+    arr = np.asarray(x, dtype=float)
+    return bool(np.all(arr &gt; 0) and np.all(np.isfinite(arr)))
+
+
+def is_nonnegative_finite_vector(x: ArrayLike) -&gt; bool:
+    &quot;&quot;&quot;Return True if x is an array of non-negative finite numbers.&quot;&quot;&quot;
+    arr = np.asarray(x, dtype=float)
+    return bool(np.all(arr &gt;= 0) and np.all(np.isfinite(arr)))
+
+
+def is_positive_or_na_finite_vector(x: ArrayLike) -&gt; bool:
+    &quot;&quot;&quot;Return True if x contains only positive finite numbers or NaN.&quot;&quot;&quot;
+    arr = np.asarray(x, dtype=float)
+    return bool(np.all((arr &gt; 0) | np.isnan(arr)) and np.all(np.isfinite(arr) | np.isnan(arr)))
+
+
+def is_nonnegative_or_na_finite_vector(x: ArrayLike) -&gt; bool:
+    arr = np.asarray(x, dtype=float)
+    return bool(np.all((arr &gt;= 0) | np.isnan(arr)) and np.all(np.isfinite(arr) | np.isnan(arr)))
+
+
+def is_positive_finite_number(x: float) -&gt; bool:
+    return isinstance(x, (int, float)) and np.isfinite(x) and x &gt; 0
+
+
+def is_nonnegative_finite_number(x: float) -&gt; bool:
+    return isinstance(x, (int, float)) and np.isfinite(x) and x &gt;= 0
+
+
+def is_positive_number(x: float) -&gt; bool:
+    return isinstance(x, (int, float)) and not np.isnan(x) and x &gt; 0
+
+
+def is_nonnegative_number(x: float) -&gt; bool:
+    return isinstance(x, (int, float)) and not np.isnan(x) and x &gt;= 0
+
+
+def valid_parameters_pareto(
+    t: float,
+    alpha: float,
+    truncation: float | None,
+    allow_alpha_zero: bool = False,
+    comment: bool = False,
+) -&gt; bool:
+    &quot;&quot;&quot;Validate Pareto parameters. Returns True if valid, False otherwise (with optional warning).&quot;&quot;&quot;
+    ok = True
+    msgs: list[str] = []
+
+    if not is_positive_finite_number(t):
+        msgs.append(&quot;t must be a positive finite number.&quot;)
+        ok = False
+    if allow_alpha_zero:
+        if not is_nonnegative_number(alpha):
+            msgs.append(&quot;alpha must be a non-negative number.&quot;)
+            ok = False
+    else:
+        if not is_positive_number(alpha):
+            msgs.append(&quot;alpha must be a positive number.&quot;)
+            ok = False
+    if truncation is not None:
+        if not is_positive_finite_number(truncation):
+            msgs.append(&quot;truncation must be a positive finite number.&quot;)
+            ok = False
+        elif t is not None and np.isfinite(t) and truncation &lt;= t:
+            msgs.append(&quot;truncation must be greater than t.&quot;)
+            ok = False
+
+    if comment and msgs:
+        warnings.warn(&quot; &quot;.join(msgs))
+    return ok
+
+
+def valid_parameters_piecewise_pareto(
+    t: ArrayLike,
+    alpha: ArrayLike,
+    truncation: float | None,
+    truncation_type: str,
+    comment: bool = False,
+) -&gt; bool:
+    &quot;&quot;&quot;Validate PiecewisePareto parameters.&quot;&quot;&quot;
+    t_arr = np.asarray(t, dtype=float)
+    alpha_arr = np.asarray(alpha, dtype=float)
+    ok = True
+    msgs: list[str] = []
+
+    if truncation_type not in (&quot;lp&quot;, &quot;wd&quot;):
+        msgs.append(&quot;truncation_type must be 'lp' or 'wd'.&quot;)
+        ok = False
+    if not is_positive_finite_number(float(t_arr[0])):
+        msgs.append(&quot;t[0] must be a positive finite number.&quot;)
+        ok = False
+    if not np.all(np.diff(t_arr) &gt; 0):
+        msgs.append(&quot;t must be strictly increasing.&quot;)
+        ok = False
+    # Interior alphas may be zero (flat severity segment); last alpha must be strictly positive.
+    if not is_nonnegative_finite_vector(alpha_arr) or float(alpha_arr[-1]) &lt;= 0:
+        msgs.append(&quot;alpha must be non-negative with the last value strictly positive.&quot;)
+        ok = False
+    if len(t_arr) != len(alpha_arr):
+        msgs.append(&quot;t and alpha must have the same length.&quot;)
+        ok = False
+    if truncation is not None:
+        if not is_positive_finite_number(truncation):
+            msgs.append(&quot;truncation must be a positive finite number.&quot;)
+            ok = False
+        elif truncation &lt;= float(t_arr[-1]):
+            # Must be greater than max(t), i.e. the last (highest) threshold
+            msgs.append(&quot;truncation must be greater than max(t).&quot;)
+            ok = False
+
+    if comment and msgs:
+        warnings.warn(&quot; &quot;.join(msgs))
+    return ok
+
+
+def valid_parameters_gen_pareto(
+    t: float,
+    alpha_ini: float,
+    alpha_tail: float,
+    truncation: float | None,
+    comment: bool = False,
+) -&gt; bool:
+    &quot;&quot;&quot;Validate generalized Pareto parameters.&quot;&quot;&quot;
+    ok = True
+    msgs: list[str] = []
+
+    if not is_positive_finite_number(t):
+        msgs.append(&quot;t must be a positive finite number.&quot;)
+        ok = False
+    if not is_positive_number(alpha_ini):
+        msgs.append(&quot;alpha_ini must be a positive number.&quot;)
+        ok = False
+    if not is_positive_number(alpha_tail):
+        msgs.append(&quot;alpha_tail must be a positive number.&quot;)
+        ok = False
+    if truncation is not None:
+        if not is_positive_finite_number(truncation):
+            msgs.append(&quot;truncation must be a positive finite number.&quot;)
+            ok = False
+        elif np.isfinite(t) and truncation &lt;= t:
+            msgs.append(&quot;truncation must be greater than t.&quot;)
+            ok = False
+
+    if comment and msgs:
+        warnings.warn(&quot; &quot;.join(msgs))
+    return ok
+</code></pre>
+<ul>
+<li>[x] <strong>Step 5: Run tests</strong></li>
+</ul>
+<pre><code class="language-bash">uv run pytest tests/test_validation.py -v
+</code></pre>
+<p>Expected: All PASS.</p>
+<ul>
+<li>[x] <strong>Step 6: Commit</strong></li>
+</ul>
+<pre><code class="language-bash">git add pyreto/_validation.py tests/conftest.py tests/test_validation.py
+git commit -m &quot;feat: add internal validation helpers&quot;
+</code></pre>
+<hr />
+<h3 id="task-4-pareto-distribution-cdf-pdf-quantile-random-sampling">Task 4: Pareto distribution — CDF, PDF, quantile, random sampling</h3>
+<p><strong>Files:</strong>
+- Create: <code>pyreto/pareto.py</code>
+- Create: <code>tests/test_pareto.py</code> (partial — this task covers distribution functions)</p>
+<ul>
+<li>[x] <strong>Step 1: Write failing tests for p/d/q/r Pareto</strong></li>
+</ul>
+<pre><code class="language-python"># tests/test_pareto.py
+import numpy as np
+import pytest
+from pyreto.pareto import p_pareto, d_pareto, q_pareto, r_pareto
+
+
+class TestPPareto:
+    def test_basic(self):
+        result = p_pareto(np.array([2000, 4000, 6000]), t=np.array([1000, 2000, 3000]), alpha=2)
+        np.testing.assert_allclose(result, [0.75, 0.75, 0.75])
+
+    def test_with_truncation(self):
+        result = p_pareto(
+            np.array([2000, 4000, 6000]),
+            t=np.array([1000, 2000, 3000]),
+            alpha=2,
+            truncation=np.array([10000, 20000, 30000]),
+        )
+        np.testing.assert_allclose(result, [0.75757575757575757] * 3)
+
+
+class TestDPareto:
+    def test_basic(self):
+        result = d_pareto(np.array([2000, 4000, 6000]), t=np.array([1000, 2000, 3000]), alpha=2)
+        np.testing.assert_allclose(
+            result, [2.5e-4, 1.25e-4, 8.333333333333333e-5], rtol=1e-10
+        )
+
+
+class TestQPareto:
+    def test_basic(self):
+        result = q_pareto(
+            np.array([0.3, 0.6, 0.9]),
+            t=np.array([1000, 2000, 3000]),
+            alpha=np.array([1, 2, 3]),
+        )
+        np.testing.assert_allclose(
+            result, [1428.5714285714287, 3162.2776601683790, 6463.3040700956490], rtol=1e-10
+        )
+
+    def test_with_truncation_scalar(self):
+        result = q_pareto(
+            np.array([0.3, 0.6, 0.9]),
+            t=np.array([1000, 2000, 3000]),
+            alpha=np.array([1, 2, 3]),
+            truncation=10000,
+        )
+        np.testing.assert_allclose(
+            result, [1369.8630136986301, 3071.4755841697556, 6011.2419963076682], rtol=1e-10
+        )
+
+    def test_with_truncation_vector(self):
+        result = q_pareto(
+            np.array([0.3, 0.6, 0.9]),
+            t=np.array([1000, 2000, 3000]),
+            alpha=np.array([1, 2, 3]),
+            truncation=np.array([10000, 20000, 30000]),
+        )
+        np.testing.assert_allclose(
+            result, [1369.8630136986301, 3138.8241028717225, 6444.0296890428708], rtol=1e-10
+        )
+
+
+class TestRPareto:
+    def test_shape(self):
+        samples = r_pareto(100, t=1000, alpha=2)
+        assert samples.shape == (100,)
+        assert np.all(samples &gt;= 1000)
+
+    def test_simulation_parity_no_truncation(self):
+        rng = np.random.default_rng(1972)
+        n = 1_000_000
+        losses = r_pareto(n, t=1000, alpha=1.5, rng=rng)
+        xs = np.minimum(8000, np.maximum(0, losses - 2000))
+        ratio = round(xs.mean() / 781.75803033941929, 2)
+        assert ratio == 1.0
+
+    def test_simulation_parity_with_truncation(self):
+        rng = np.random.default_rng(1972)
+        n = 1_000_000
+        losses = r_pareto(n, t=1000, alpha=1.5, truncation=20000, rng=rng)
+        xs = np.minimum(8000, np.maximum(0, losses - 2000))
+        ratio = round(xs.mean() / 700.14314962210699, 2)
+        assert ratio == 1.0
+</code></pre>
+<ul>
+<li>[x] <strong>Step 2: Run to verify failure</strong></li>
+</ul>
+<pre><code class="language-bash">uv run pytest tests/test_pareto.py -v
+</code></pre>
+<p>Expected: <code>ImportError</code>.</p>
+<ul>
+<li>[x] <strong>Step 3: Implement CDF, PDF, quantile, random in <code>pyreto/pareto.py</code></strong></li>
+</ul>
+<p>Start the file with the standard/CDF/PDF/quantile/random section. Note that many functions in the R source have a scalar (<code>_s</code>) and vectorised version — in Python we implement only the vectorised form using numpy, which handles both scalar and array inputs naturally.</p>
+<pre><code class="language-python">&quot;&quot;&quot;Pareto distribution functions for reinsurance pricing.
+
+Mirrors the Pareto section of the R Pareto package (Functions.R).
+All functions accept scalar or array inputs (numpy broadcasting).
+
+R → Python name mapping (see docs/function_mapping.md):
+  pPareto               → p_pareto
+  dPareto               → d_pareto
+  qPareto               → q_pareto
+  rPareto               → r_pareto
+  Pareto_Layer_Mean     → pareto_layer_mean
+  Pareto_Layer_SM       → pareto_layer_sm
+  Pareto_Layer_Var      → pareto_layer_var
+  Pareto_Extrapolation  → pareto_extrapolation
+  Pareto_Find_Alpha_btw_Layers    → pareto_find_alpha_btw_layers
+  Pareto_Find_Alpha_btw_FQ_Layer  → pareto_find_alpha_btw_fq_layer
+  Pareto_Find_Alpha_btw_FQs       → pareto_find_alpha_btw_fqs
+  Pareto_ML_Estimator_Alpha       → pareto_ml_estimator_alpha
+  Local_Pareto_Alpha              → local_pareto_alpha  (in fitting.py)
+&quot;&quot;&quot;
+from __future__ import annotations
+
+import warnings
+import numpy as np
+from numpy.typing import ArrayLike
+from scipy import optimize
+
+from pyreto._validation import valid_parameters_pareto
+
+
+def p_pareto(
+    x: ArrayLike,
+    t: ArrayLike,
+    alpha: float,
+    truncation: ArrayLike | None = None,
+) -&gt; np.ndarray:
+    &quot;&quot;&quot;CDF of the Pareto(t, alpha) distribution.
+
+    Parameters
+    ----------
+    x : array-like
+        Values at which to evaluate the CDF.
+    t : array-like
+        Threshold (scale) parameter. Must be positive.
+    alpha : float
+        Shape parameter. Must be positive.
+    truncation : array-like or None
+        Upper truncation point. If provided, the distribution is truncated at
+        this value and the CDF is renormalised.
+
+    Returns
+    -------
+    np.ndarray
+        CDF values in [0, 1].
+
+    Examples
+    --------
+    &gt;&gt;&gt; p_pareto(np.array([2000.0]), t=1000.0, alpha=2.0)
+    array([0.75])
+    &quot;&quot;&quot;
+    x = np.asarray(x, dtype=float)
+    t = np.asarray(t, dtype=float)
+    alpha = float(alpha)
+    result = np.where(x &lt;= t, 0.0, 1.0 - (t / x) ** alpha)
+
+    if truncation is not None:
+        trunc = np.asarray(truncation, dtype=float)
+        # P(X &lt;= trunc) under untruncated distribution
+        p_trunc = 1.0 - (t / trunc) ** alpha
+        result = np.where(x &gt;= trunc, 1.0, result / p_trunc)
+
+    return result
+
+
+def d_pareto(
+    x: ArrayLike,
+    t: ArrayLike,
+    alpha: float,
+    truncation: ArrayLike | None = None,
+) -&gt; np.ndarray:
+    &quot;&quot;&quot;PDF of the Pareto(t, alpha) distribution.
+
+    Parameters
+    ----------
+    x : array-like
+        Values at which to evaluate the PDF.
+    t : array-like
+        Threshold parameter.
+    alpha : float
+        Shape parameter.
+    truncation : array-like or None
+        Upper truncation point.
+
+    Returns
+    -------
+    np.ndarray
+        PDF values (zero outside support).
+
+    Examples
+    --------
+    &gt;&gt;&gt; d_pareto(np.array([2000.0]), t=1000.0, alpha=2.0)
+    array([0.00025])
+    &quot;&quot;&quot;
+    x = np.asarray(x, dtype=float)
+    t = np.asarray(t, dtype=float)
+    alpha = float(alpha)
+    pdf = np.where(x &lt; t, 0.0, alpha * t**alpha / x ** (alpha + 1))
+
+    if truncation is not None:
+        trunc = np.asarray(truncation, dtype=float)
+        p_trunc = 1.0 - (t / trunc) ** alpha
+        pdf = np.where(x &gt; trunc, 0.0, pdf / p_trunc)
+
+    return pdf
+
+
+def q_pareto(
+    p: ArrayLike,
+    t: ArrayLike,
+    alpha: ArrayLike,
+    truncation: ArrayLike | None = None,
+) -&gt; np.ndarray:
+    &quot;&quot;&quot;Quantile function of the Pareto(t, alpha) distribution.
+
+    Parameters
+    ----------
+    p : array-like
+        Probabilities in [0, 1].
+    t : array-like
+        Threshold parameter.
+    alpha : array-like
+        Shape parameter.
+    truncation : array-like or None
+        Upper truncation point.
+
+    Returns
+    -------
+    np.ndarray
+        Quantiles.
+
+    Examples
+    --------
+    &gt;&gt;&gt; q_pareto(np.array([0.75]), t=1000.0, alpha=2.0)
+    array([2000.])
+    &quot;&quot;&quot;
+    p = np.asarray(p, dtype=float)
+    t = np.asarray(t, dtype=float)
+    alpha = np.asarray(alpha, dtype=float)
+
+    if truncation is None:
+        return t / (1.0 - p) ** (1.0 / alpha)
+
+    trunc = np.asarray(truncation, dtype=float)
+    p_trunc = 1.0 - (t / trunc) ** alpha
+    p_adj = p * p_trunc  # scale p back to untruncated range
+    return np.minimum(trunc, t / (1.0 - p_adj) ** (1.0 / alpha))
+
+
+def r_pareto(
+    n: int,
+    t: float,
+    alpha: float,
+    truncation: float | None = None,
+    rng: np.random.Generator | None = None,
+) -&gt; np.ndarray:
+    &quot;&quot;&quot;Draw random samples from the Pareto(t, alpha) distribution.
+
+    Parameters
+    ----------
+    n : int
+        Number of samples.
+    t : float
+        Threshold parameter.
+    alpha : float
+        Shape parameter.
+    truncation : float or None
+        Upper truncation point.
+    rng : np.random.Generator or None
+        Random number generator (for reproducibility). If None, uses default_rng().
+
+    Returns
+    -------
+    np.ndarray
+        Array of n samples, all &gt;= t.
+
+    Examples
+    --------
+    &gt;&gt;&gt; r_pareto(5, t=1000.0, alpha=2.0, rng=np.random.default_rng(42))
+    array([...])
+    &quot;&quot;&quot;
+    if rng is None:
+        rng = np.random.default_rng()
+    u = rng.uniform(0, 1, n)
+    return q_pareto(u, t=t, alpha=alpha, truncation=truncation)
+</code></pre>
+<ul>
+<li>[x] <strong>Step 4: Run tests</strong></li>
+</ul>
+<pre><code class="language-bash">uv run pytest tests/test_pareto.py::TestPPareto tests/test_pareto.py::TestDPareto tests/test_pareto.py::TestQPareto tests/test_pareto.py::TestRPareto -v
+</code></pre>
+<p>Expected: All PASS.</p>
+<ul>
+<li>[x] <strong>Step 5: Commit</strong></li>
+</ul>
+<pre><code class="language-bash">git add pyreto/pareto.py tests/test_pareto.py
+git commit -m &quot;feat: add Pareto CDF, PDF, quantile, and random sampling&quot;
+</code></pre>
+<hr />
+<h3 id="task-5-pareto-distribution-layer-moments">Task 5: Pareto distribution — layer moments</h3>
+<p><strong>Files:</strong>
+- Modify: <code>pyreto/pareto.py</code>
+- Modify: <code>tests/test_pareto.py</code></p>
+<ul>
+<li>[x] <strong>Step 1: Add layer moment tests</strong></li>
+</ul>
+<p>Append to <code>tests/test_pareto.py</code>:</p>
+<pre><code class="language-python">from pyreto.pareto import pareto_layer_mean, pareto_layer_sm, pareto_layer_var
+
+
+class TestParetoLayerMean:
+    def test_basic(self):
+        assert pareto_layer_mean(8000, 2000, alpha=2) == pytest.approx(1600)
+
+    def test_with_t(self):
+        assert pareto_layer_mean(8000, 2000, alpha=2, t=1000) == pytest.approx(400)
+
+    def test_with_t_and_truncation(self):
+        assert pareto_layer_mean(8000, 2000, alpha=2, t=5000, truncation=10000) == pytest.approx(4666.66666666667)
+
+    def test_alpha_zero(self):
+        assert pareto_layer_mean(2000, 1000, 0, truncation=5000, t=500) == pytest.approx(835.16520831955449)
+
+    def test_vectorised(self):
+        np.testing.assert_allclose(
+            pareto_layer_mean(np.arange(1, 4) * 8000, np.arange(1, 4) * 2000, alpha=2),
+            np.arange(1, 4) * 1600,
+        )
+
+    def test_vectorised_with_t(self):
+        np.testing.assert_allclose(
+            pareto_layer_mean(
+                np.arange(1, 4) * 8000, np.arange(1, 4) * 2000,
+                alpha=2, t=np.arange(1, 4) * 1000,
+            ),
+            np.arange(1, 4) * 400,
+        )
+
+    def test_vectorised_with_t_and_truncation(self):
+        np.testing.assert_allclose(
+            pareto_layer_mean(
+                np.arange(1, 4) * 8000, np.arange(1, 4) * 2000,
+                alpha=2,
+                t=np.arange(1, 4) * 5000,
+                truncation=np.arange(1, 4) * 10000,
+            ),
+            np.arange(1, 4) * 4666.66666666667,
+        )
+
+
+class TestParetoLayerSM:
+    def test_basic(self):
+        assert pareto_layer_sm(8000, 2000, alpha=2) == pytest.approx(6475503.2994728)
+
+    def test_with_t(self):
+        assert pareto_layer_sm(8000, 2000, alpha=2, t=1000) == pytest.approx(1618875.8248682)
+
+    def test_with_truncation(self):
+        assert pareto_layer_sm(8000, 2000, alpha=2, t=5000, truncation=10000) == pytest.approx(23543145.370663)
+
+    def test_alpha_zero_with_t(self):
+        assert pareto_layer_sm(2000, 1000, alpha=0, truncation=5000, t=1500) == pytest.approx(2584318.901925616)
+
+    def test_vectorised(self):
+        np.testing.assert_allclose(
+            pareto_layer_sm(np.arange(1, 4) * 8000, np.arange(1, 4) * 2000, alpha=2),
+            np.arange(1, 4) ** 2 * 6475503.2994728,
+        )
+
+
+class TestParetoLayerVar:
+    def test_basic(self):
+        assert pareto_layer_var(8000, 2000, alpha=2) == pytest.approx(3915503.2994728)
+
+    def test_with_t(self):
+        assert pareto_layer_var(8000, 2000, alpha=2, t=1000) == pytest.approx(1458875.8248682)
+
+    def test_with_truncation(self):
+        assert pareto_layer_var(8000, 2000, alpha=2, t=5000, truncation=10000) == pytest.approx(1765367.59288524)
+</code></pre>
+<ul>
+<li>[x] <strong>Step 2: Run to verify failure</strong></li>
+</ul>
+<pre><code class="language-bash">uv run pytest tests/test_pareto.py::TestParetoLayerMean -v
+</code></pre>
+<p>Expected: <code>ImportError</code>.</p>
+<ul>
+<li>[x] <strong>Step 3: Implement layer moments in <code>pyreto/pareto.py</code></strong></li>
+</ul>
+<p>The layer mean of Pareto(t, alpha) in cover C xs attachment A is derived from the analytical formula in the R source. Key formula for <code>Pareto_Layer_Mean_s</code> (scalar):</p>
+<ul>
+<li>If <code>t &gt;= A + C</code>: 0</li>
+<li>If <code>t &lt;= A</code>: standard formula using <code>(t/A)^alpha</code></li>
+<li>With truncation: subtract contribution above truncation point</li>
+</ul>
+<p>Implement <code>pareto_layer_mean</code>, <code>pareto_layer_sm</code>, <code>pareto_layer_var</code> following the scalar implementations in <code>Functions.R</code> lines 47–219, 369–437, 242–345, wrapped with <code>np.vectorize</code> for broadcasting:</p>
+<pre><code class="language-python">def _pareto_layer_mean_scalar(
+    cover: float, attachment: float, alpha: float, t: float | None, truncation: float | None
+) -&gt; float:
+    &quot;&quot;&quot;Scalar implementation. See R source Pareto_Layer_Mean_s.&quot;&quot;&quot;
+    # ... (full implementation following Functions.R:47-155)
+
+def pareto_layer_mean(
+    cover: ArrayLike,
+    attachment_point: ArrayLike,
+    alpha: ArrayLike,
+    t: ArrayLike | None = None,
+    truncation: ArrayLike | None = None,
+) -&gt; np.ndarray:
+    &quot;&quot;&quot;Expected loss of Pareto(t, alpha) in reinsurance layer cover xs attachment_point.
+    ...
+    &quot;&quot;&quot;
+    # vectorize over (cover, attachment_point, alpha) and optionally t, truncation
+    _vfun = np.vectorize(_pareto_layer_mean_scalar)
+    cover = np.asarray(cover, dtype=float)
+    attachment_point = np.asarray(attachment_point, dtype=float)
+    alpha = np.asarray(alpha, dtype=float)
+    t_arr = np.asarray(t, dtype=float) if t is not None else attachment_point.copy()
+    trunc_arr = np.asarray(truncation, dtype=float) if truncation is not None else np.full_like(cover, np.inf)
+    return _vfun(cover, attachment_point, alpha, t_arr, trunc_arr)
+</code></pre>
+<p>See <code>Functions.R</code> for the exact scalar formulas. Implement <code>pareto_layer_sm</code> (second moment) and <code>pareto_layer_var</code> similarly.</p>
+<ul>
+<li>[x] <strong>Step 4: Run tests</strong></li>
+</ul>
+<pre><code class="language-bash">uv run pytest tests/test_pareto.py -v
+</code></pre>
+<p>Expected: All PASS.</p>
+<ul>
+<li>[x] <strong>Step 5: Commit</strong></li>
+</ul>
+<pre><code class="language-bash">git add pyreto/pareto.py tests/test_pareto.py
+git commit -m &quot;feat: add Pareto layer mean, second moment, and variance&quot;
+</code></pre>
+<hr />
+<h3 id="task-6-pareto-distribution-alpha-finding-and-extrapolation">Task 6: Pareto distribution — alpha-finding and extrapolation</h3>
+<p><strong>Files:</strong>
+- Modify: <code>pyreto/pareto.py</code>
+- Modify: <code>tests/test_pareto.py</code></p>
+<ul>
+<li>[x] <strong>Step 1: Add tests</strong></li>
+</ul>
+<pre><code class="language-python">from pyreto.pareto import (
+    pareto_extrapolation,
+    pareto_find_alpha_btw_layers,
+    pareto_find_alpha_btw_fq_layer,
+    pareto_find_alpha_btw_fqs,
+)
+
+
+class TestParetoExtrapolation:
+    def test_ratio(self):
+        assert pareto_extrapolation(1000, 1000, 2000, 2000, alpha=2) == pytest.approx(0.5)
+
+    def test_with_exp_loss(self):
+        assert pareto_extrapolation(1000, 1000, 2000, 2000, alpha=2, exp_loss_1=1000) == pytest.approx(500)
+
+    def test_with_truncation(self):
+        assert pareto_extrapolation(
+            1000, 1000, 2000, 2000, alpha=2, truncation=3000, exp_loss_1=1000
+        ) == pytest.approx(142.85714285714292)
+
+    def test_vectorised(self):
+        result = pareto_extrapolation(
+            np.array([1000, 1000, 1000, np.inf]),
+            1000,
+            np.array([2000, 2000, 2000, np.inf]),
+            2000,
+            alpha=np.array([2, 2, 2, 0]),
+            truncation=np.array([np.inf, np.inf, 3000, 3000]),
+            exp_loss_1=np.array([1, 1000, 1000, 100]),
+        )
+        np.testing.assert_allclose(result, [0.5, 500, 142.85714285714292, 20.975411735345432])
+
+
+class TestParetoFindAlpha:
+    def test_btw_layers_equal(self):
+        assert pareto_find_alpha_btw_layers(1000, 1000, 100, 2000, 2000, 100) == pytest.approx(1)
+
+    def test_btw_layers_halved(self):
+        assert pareto_find_alpha_btw_layers(1000, 1000, 100, 2000, 2000, 50) == pytest.approx(2)
+
+    def test_btw_fq_layer(self):
+        assert pareto_find_alpha_btw_fq_layer(1000, 1, 2000, 2000, 100) == pytest.approx(2.9330042139247037)
+
+    def test_btw_fqs_basic(self):
+        assert pareto_find_alpha_btw_fqs(1000, 1, 2000, 0.5) == pytest.approx(1)
+        assert pareto_find_alpha_btw_fqs(2000, 0.25, 1000, 1) == pytest.approx(2)
+</code></pre>
+<ul>
+<li>[x] <strong>Step 2: Run to verify failure</strong></li>
+</ul>
+<pre><code class="language-bash">uv run pytest tests/test_pareto.py::TestParetoExtrapolation tests/test_pareto.py::TestParetoFindAlpha -v
+</code></pre>
+<ul>
+<li>[x] <strong>Step 3: Implement using <code>scipy.optimize.brentq</code> for root-finding</strong></li>
+</ul>
+<p>R's <code>uniroot</code> → <code>scipy.optimize.brentq</code>. The alpha-finding functions solve <code>f(alpha) = 0</code> where <code>f</code> is the difference between two layer means or frequencies expressed in terms of alpha.</p>
+<ul>
+<li>[x] <strong>Step 4: Run all Pareto tests</strong></li>
+</ul>
+<pre><code class="language-bash">uv run pytest tests/test_pareto.py -v
+</code></pre>
+<p>Expected: All PASS.</p>
+<ul>
+<li>[x] <strong>Step 5: Commit</strong></li>
+</ul>
+<pre><code class="language-bash">git add pyreto/pareto.py tests/test_pareto.py
+git commit -m &quot;feat: add Pareto extrapolation and alpha-finding functions&quot;
+</code></pre>
+<hr />
+<h3 id="task-7-pareto-ml-estimator">Task 7: Pareto ML estimator</h3>
+<p><strong>Files:</strong>
+- Modify: <code>pyreto/pareto.py</code>
+- Modify: <code>tests/test_pareto.py</code></p>
+<ul>
+<li>[x] <strong>Step 1: Add ML estimator tests (ported from R)</strong></li>
+</ul>
+<pre><code class="language-python">from pyreto.pareto import pareto_ml_estimator_alpha
+
+
+class TestParetoMLEstimator:
+    def test_basic(self, pareto_losses):
+        assert round(pareto_ml_estimator_alpha(pareto_losses, 1000), 4) == 3.4060
+
+    def test_with_truncation(self, pareto_losses):
+        assert round(pareto_ml_estimator_alpha(pareto_losses, 1000, truncation=3000), 4) == 2.9601
+
+    def test_weights_equivalent_to_duplicates(self, pareto_losses):
+        losses2 = np.concatenate([pareto_losses, pareto_losses[:2]])
+        w = np.ones(len(pareto_losses))
+        w[:2] = 2
+        assert pareto_ml_estimator_alpha(pareto_losses, 1000, weights=w) == pytest.approx(
+            pareto_ml_estimator_alpha(losses2, 1000)
+        )
+
+    def test_with_reporting_thresholds(self, pareto_losses):
+        rt = np.array([1000, 1000, 1000, 1200, 1200, 1000, 1500, 1000, 1000, 1000], dtype=float)
+        assert round(pareto_ml_estimator_alpha(pareto_losses, 1000, reporting_thresholds=rt), 5) == 4.61698
+</code></pre>
+<ul>
+<li>[x] <strong>Step 2: Run to verify failure</strong></li>
+</ul>
+<pre><code class="language-bash">uv run pytest tests/test_pareto.py::TestParetoMLEstimator -v
+</code></pre>
+<ul>
+<li>[x] <strong>Step 3: Implement <code>pareto_ml_estimator_alpha</code></strong></li>
+</ul>
+<p>R source is <code>Functions.R</code> lines 2814–3026. The MLE solves the log-likelihood using <code>scipy.optimize.minimize_scalar</code> or <code>brentq</code>. Support: truncated, censored, weighted, heterogeneous reporting thresholds.</p>
+<ul>
+<li>[x] <strong>Step 4: Run all Pareto tests</strong></li>
+</ul>
+<pre><code class="language-bash">uv run pytest tests/test_pareto.py -v
+</code></pre>
+<p>Expected: All PASS.</p>
+<ul>
+<li>[x] <strong>Step 5: Run ruff and ty</strong></li>
+</ul>
+<pre><code class="language-bash">uv run ruff check pyreto/pareto.py &amp;&amp; uv run ty check pyreto
+</code></pre>
+<ul>
+<li>[x] <strong>Step 6: Commit</strong></li>
+</ul>
+<pre><code class="language-bash">git add pyreto/pareto.py tests/test_pareto.py
+git commit -m &quot;feat: add Pareto ML alpha estimator&quot;
+</code></pre>
+<hr />
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
