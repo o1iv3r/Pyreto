@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from dataclasses import replace
+
 import numpy as np
 
 from pyreto.matching.lp import _solve_lp, _TowerResult
@@ -60,173 +62,195 @@ def _calculate_layer_losses(
     att_layers = np.asarray(att_layers, dtype=float)
     limits = np.asarray(limits, dtype=float)
     exp_losses = np.asarray(exp_losses, dtype=float)
-    n_layers = len(att_layers)
-
-    # ------------------------------------------------------------------
-    # Step 1: build the initial tower
-    # ------------------------------------------------------------------
 
     if overlapping:
-        lp = _solve_lp(att_layers, limits, exp_losses, thresholds, threshold_freqs)
-        if lp.status != 0:
-            if not ignore_inconsistent_references:
-                return _TowerResult(
-                    att=lp.att,
-                    limits=lp.limits,
-                    exp_loss=lp.exp_loss,
-                    frequency=lp.frequency,
-                    info_available=lp.info_available,
-                    status=4,
-                )
-        tower_att = lp.att
-        tower_lim = lp.limits
-        el_info = lp.info_available.copy()
-        tower_el = lp.exp_loss.copy()
-        tower_freq = lp.frequency.copy()
-        status = lp.status
+        tower = _solve_lp(att_layers, limits, exp_losses, thresholds, threshold_freqs)
+        if tower.status != 0 and not ignore_inconsistent_references:
+            return replace(tower, status=4)
     else:
-        # Non-overlapping: sort layers, add threshold rows, fill gaps.
-        order = np.argsort(att_layers)
-        s_att = att_layers[order]
-        s_lim = limits[order]
-        s_el = exp_losses[order]
+        tower = _build_non_overlapping_tower(
+            att_layers,
+            limits,
+            exp_losses,
+            thresholds,
+            threshold_freqs,
+            ignore_inconsistent_references=ignore_inconsistent_references,
+        )
+        if tower.status == 4:
+            return tower
 
-        # Start tower from sorted layers
-        t_att = list(s_att)
-        t_lim = list(s_lim)
-        t_el = list(s_el)
-        t_freq = [np.nan] * n_layers
-        t_info = [True] * n_layers  # EL came from input
+    return _fill_missing_losses(tower, default_alpha)
 
-        # Merge threshold rows
-        if thresholds is not None and len(thresholds) > 0:
-            thr = np.asarray(thresholds, dtype=float)
-            fqs = np.asarray(threshold_freqs, dtype=float)
-            for thresh, freq in zip(np.sort(thr), fqs[np.argsort(thr)], strict=True):
-                match = np.searchsorted(t_att, thresh)
-                if match < len(t_att) and t_att[match] == thresh:
-                    t_freq[match] = float(freq)
-                else:
-                    # Insert new threshold-only row
-                    t_att.insert(match, float(thresh))
-                    t_lim.insert(match, np.nan)  # filled below
-                    t_el.insert(match, np.nan)
-                    t_freq.insert(match, float(freq))
-                    t_info.insert(match, False)
 
-        n = len(t_att)
+def _build_non_overlapping_tower(
+    att_layers: np.ndarray,
+    limits: np.ndarray,
+    exp_losses: np.ndarray,
+    thresholds: np.ndarray | None,
+    threshold_freqs: np.ndarray | None,
+    *,
+    ignore_inconsistent_references: bool,
+) -> _TowerResult:
+    """Sort the layers, add threshold rows and gap layers, then check consistency.
 
-        # Fill in limits for threshold-only rows
-        for i in range(n):
-            if np.isnan(t_lim[i]):
-                if i < n - 1:
-                    t_lim[i] = t_att[i + 1] - t_att[i]
-                else:
-                    t_lim[i] = np.inf
+    Returns status 4 if RoLs and frequencies are inconsistent and
+    ``ignore_inconsistent_references`` is False. Otherwise inconsistent
+    references are dropped one by one via the LP (status 1).
+    """
+    n_layers = len(att_layers)
+    order = np.argsort(att_layers)
+    s_att = att_layers[order]
+    s_lim = limits[order]
+    s_el = exp_losses[order]
 
-        # Fill gaps (sub-layers between consecutive layers that don't touch)
-        new_rows: list[tuple[float, float, float, float, bool]] = []
-        for i in range(n - 1):
-            gap_start = t_att[i] + t_lim[i]
-            gap_end = t_att[i + 1]
-            if gap_start < gap_end - 1e-12:
-                new_rows.append((gap_start, gap_end - gap_start, np.nan, np.nan, False))
+    # Start tower from sorted layers
+    t_att = list(s_att)
+    t_lim = list(s_lim)
+    t_el = list(s_el)
+    t_freq = [np.nan] * n_layers
+    t_info = [True] * n_layers  # EL came from input
 
-        for att_g, lim_g, el_g, freq_g, info_g in new_rows:
-            idx = np.searchsorted([r[0] for r in [(a,) for a in t_att]], att_g)
-            t_att.insert(idx, att_g)
-            t_lim.insert(idx, lim_g)
-            t_el.insert(idx, el_g)
-            t_freq.insert(idx, freq_g)
-            t_info.insert(idx, info_g)
+    # Merge threshold rows
+    if thresholds is not None and len(thresholds) > 0:
+        thr = np.asarray(thresholds, dtype=float)
+        fqs = np.asarray(threshold_freqs, dtype=float)
+        for thresh, freq in zip(np.sort(thr), fqs[np.argsort(thr)], strict=True):
+            match = np.searchsorted(t_att, thresh)
+            if match < len(t_att) and t_att[match] == thresh:
+                t_freq[match] = float(freq)
+            else:
+                # Insert new threshold-only row
+                t_att.insert(match, float(thresh))
+                t_lim.insert(match, np.nan)  # filled below
+                t_el.insert(match, np.nan)
+                t_freq.insert(match, float(freq))
+                t_info.insert(match, False)
 
-        # Ensure unlimited final row
-        n = len(t_att)
-        last_exit = t_att[-1] + t_lim[-1]
-        if not np.isinf(last_exit):
-            t_att.append(last_exit)
-            t_lim.append(np.inf)
-            t_el.append(np.nan)
-            t_freq.append(np.nan)
-            t_info.append(False)
+    n = len(t_att)
 
-        tower_att = np.array(t_att, dtype=float)
-        tower_lim = np.array(t_lim, dtype=float)
-        tower_el = np.array(t_el, dtype=float)
-        tower_freq = np.array(t_freq, dtype=float)
-        el_info = np.array(t_info, dtype=bool)
-        n = len(tower_att)
+    # Fill in limits for threshold-only rows
+    for i in range(n):
+        if np.isnan(t_lim[i]):
+            if i < n - 1:
+                t_lim[i] = t_att[i + 1] - t_att[i]
+            else:
+                t_lim[i] = np.inf
 
-        # Check RoL / frequency consistency: interleave freqs and RoLs and
-        # verify the combined sequence is non-increasing.
-        rols = np.where(np.isinf(tower_lim), 0.0, tower_el / tower_lim)
-        fq_rol = np.empty(2 * n)
-        fq_rol[0::2] = tower_freq
-        fq_rol[1::2] = rols
-        fq_rol_valid = fq_rol[~np.isnan(fq_rol)]
+    # Fill gaps (sub-layers between consecutive layers that don't touch)
+    new_rows: list[tuple[float, float, float, float, bool]] = []
+    for i in range(n - 1):
+        gap_start = t_att[i] + t_lim[i]
+        gap_end = t_att[i + 1]
+        if gap_start < gap_end - 1e-12:
+            new_rows.append((gap_start, gap_end - gap_start, np.nan, np.nan, False))
 
-        status = 0
-        if len(fq_rol_valid) > 1 and np.max(np.diff(fq_rol_valid)) > 0:
-            # Inconsistent references — attempt LP resolution
-            if not ignore_inconsistent_references:
-                return _TowerResult(
-                    att=tower_att,
-                    limits=tower_lim,
-                    exp_loss=tower_el,
-                    frequency=tower_freq,
-                    info_available=el_info,
-                    status=4,
-                )
-            # Try progressively dropping inconsistent references
-            use_layer = np.zeros(n_layers, dtype=bool)
-            use_layer[0] = True
-            for i in range(1, n_layers):
-                use_layer[i] = True
-                probe = _solve_lp(
-                    att_layers[use_layer],
-                    limits[use_layer],
-                    exp_losses[use_layer],
-                    thresholds,
-                    threshold_freqs,
-                )
-                if probe.status != 0:
-                    use_layer[i] = False
+    for att_g, lim_g, el_g, freq_g, info_g in new_rows:
+        idx = np.searchsorted(t_att, att_g)
+        t_att.insert(idx, att_g)
+        t_lim.insert(idx, lim_g)
+        t_el.insert(idx, el_g)
+        t_freq.insert(idx, freq_g)
+        t_info.insert(idx, info_g)
 
-            n_thr = len(thresholds) if thresholds is not None else 0
-            use_thr = np.zeros(n_thr, dtype=bool)
-            for i in range(n_thr):
-                use_thr[i] = True
-                probe = _solve_lp(
-                    att_layers[use_layer],
-                    limits[use_layer],
-                    exp_losses[use_layer],
-                    thresholds[use_thr] if thresholds is not None else None,
-                    threshold_freqs[use_thr] if threshold_freqs is not None else None,
-                )
-                if probe.status != 0:
-                    use_thr[i] = False
+    # Ensure unlimited final row
+    n = len(t_att)
+    last_exit = t_att[-1] + t_lim[-1]
+    if not np.isinf(last_exit):
+        t_att.append(last_exit)
+        t_lim.append(np.inf)
+        t_el.append(np.nan)
+        t_freq.append(np.nan)
+        t_info.append(False)
 
-            lp = _solve_lp(
+    tower_att = np.array(t_att, dtype=float)
+    tower_lim = np.array(t_lim, dtype=float)
+    tower_el = np.array(t_el, dtype=float)
+    tower_freq = np.array(t_freq, dtype=float)
+    el_info = np.array(t_info, dtype=bool)
+    n = len(tower_att)
+
+    # Check RoL / frequency consistency: interleave freqs and RoLs and
+    # verify the combined sequence is non-increasing.
+    rols = np.where(np.isinf(tower_lim), 0.0, tower_el / tower_lim)
+    fq_rol = np.empty(2 * n)
+    fq_rol[0::2] = tower_freq
+    fq_rol[1::2] = rols
+    fq_rol_valid = fq_rol[~np.isnan(fq_rol)]
+
+    status = 0
+    if len(fq_rol_valid) > 1 and np.max(np.diff(fq_rol_valid)) > 0:
+        # Inconsistent references — attempt LP resolution
+        if not ignore_inconsistent_references:
+            return _TowerResult(
+                att=tower_att,
+                limits=tower_lim,
+                exp_loss=tower_el,
+                frequency=tower_freq,
+                info_available=el_info,
+                status=4,
+            )
+        # Try progressively dropping inconsistent references
+        use_layer = np.zeros(n_layers, dtype=bool)
+        use_layer[0] = True
+        for i in range(1, n_layers):
+            use_layer[i] = True
+            probe = _solve_lp(
                 att_layers[use_layer],
                 limits[use_layer],
                 exp_losses[use_layer],
-                thresholds[use_thr] if thresholds is not None and n_thr > 0 else None,
-                threshold_freqs[use_thr] if threshold_freqs is not None and n_thr > 0 else None,
+                thresholds,
+                threshold_freqs,
             )
-            tower_att = lp.att
-            tower_lim = lp.limits
-            tower_el = lp.exp_loss.copy()
-            tower_freq = lp.frequency.copy()
-            el_info = lp.info_available.copy()
-            status = 1  # some refs ignored
+            if probe.status != 0:
+                use_layer[i] = False
 
-    # ------------------------------------------------------------------
-    # Step 2: gap-fill missing expected losses
-    # ------------------------------------------------------------------
+        n_thr = len(thresholds) if thresholds is not None else 0
+        use_thr = np.zeros(n_thr, dtype=bool)
+        for i in range(n_thr):
+            use_thr[i] = True
+            probe = _solve_lp(
+                att_layers[use_layer],
+                limits[use_layer],
+                exp_losses[use_layer],
+                thresholds[use_thr] if thresholds is not None else None,
+                threshold_freqs[use_thr] if threshold_freqs is not None else None,
+            )
+            if probe.status != 0:
+                use_thr[i] = False
 
+        lp = _solve_lp(
+            att_layers[use_layer],
+            limits[use_layer],
+            exp_losses[use_layer],
+            thresholds[use_thr] if thresholds is not None and n_thr > 0 else None,
+            threshold_freqs[use_thr] if threshold_freqs is not None and n_thr > 0 else None,
+        )
+        tower_att = lp.att
+        tower_lim = lp.limits
+        tower_el = lp.exp_loss.copy()
+        tower_freq = lp.frequency.copy()
+        el_info = lp.info_available.copy()
+        status = 1  # some refs ignored
+
+    return _TowerResult(
+        att=tower_att,
+        limits=tower_lim,
+        exp_loss=tower_el,
+        frequency=tower_freq,
+        info_available=el_info,
+        status=status,
+    )
+
+
+def _fill_missing_losses(tower: _TowerResult, default_alpha: float) -> _TowerResult:
+    """Fill sub-layers without expected-loss information by Pareto interpolation."""
+    tower_att = tower.att
+    tower_lim = tower.limits
+    el_info = tower.info_available.copy()
+    status = tower.status
     n = len(tower_att)
-    el = tower_el.copy()
-    freq = tower_freq.copy()
+    el = tower.exp_loss.copy()
+    freq = tower.frequency.copy()
 
     info_has_data = el_info | ~np.isnan(freq)
     index_info = np.where(info_has_data)[0]
