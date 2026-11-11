@@ -32,7 +32,7 @@ def piecewise_pareto_match_layer_losses(
     merge_tolerance: float = 1e-6,
     rol_tolerance: float = 1e-6,
     minimize_ratios: bool = True,
-) -> object:
+) -> PPPModel:
     """Fit a PPPModel to reinsurance layer attachment points and expected losses.
 
     Port of ``PiecewisePareto_Match_Layer_Losses`` from ``Functions.R``.
