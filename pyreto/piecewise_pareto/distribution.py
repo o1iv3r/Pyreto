@@ -103,6 +103,15 @@ def p_piecewise_pareto(
 # ---------------------------------------------------------------------------
 
 
+def _untruncated_density(x: float, t_arr: np.ndarray, alpha_arr: np.ndarray) -> float:
+    """Density of the untruncated piecewise Pareto at x >= t[0]."""
+    t_sub = t_arr[t_arr <= x]
+    k = len(t_sub)
+    a_sub = alpha_arr[:k]
+    excess_prob = 1.0 - _p_piecewise_pareto_s(x, t_sub, a_sub, None, "lp")
+    return excess_prob * a_sub[-1] / x
+
+
 def _d_piecewise_pareto_s(
     x: float,
     t_arr: np.ndarray,
@@ -130,11 +139,7 @@ def _d_piecewise_pareto_s(
         return 0.0
 
     if trunc is None:
-        t_sub = t_arr[t_arr <= x]
-        k = len(t_sub)
-        a_sub = alpha_arr[:k]
-        excess_prob = 1.0 - _p_piecewise_pareto_s(x, t_sub, a_sub, None, "lp")
-        return excess_prob * a_sub[-1] / x
+        return _untruncated_density(x, t_arr, alpha_arr)
 
     if truncation_type == "wd":
         if x >= trunc:
@@ -142,21 +147,13 @@ def _d_piecewise_pareto_s(
         # scaling = 1 / CDF_untruncated_at_trunc
         cdf_trunc = _p_piecewise_pareto_s(trunc, t_arr, alpha_arr, None, "lp")
         scaling = 1.0 / cdf_trunc
-        t_sub = t_arr[t_arr <= x]
-        k = len(t_sub)
-        a_sub = alpha_arr[:k]
-        excess_prob = 1.0 - _p_piecewise_pareto_s(x, t_sub, a_sub, None, "lp")
-        return excess_prob * a_sub[-1] / x * scaling
+        return _untruncated_density(x, t_arr, alpha_arr) * scaling
 
     else:  # "lp"
         if x >= trunc:
             return 0.0
         if x <= t_arr[-1]:
-            t_sub = t_arr[t_arr <= x]
-            k = len(t_sub)
-            a_sub = alpha_arr[:k]
-            excess_prob = 1.0 - _p_piecewise_pareto_s(x, t_sub, a_sub, None, "lp")
-            return excess_prob * a_sub[-1] / x
+            return _untruncated_density(x, t_arr, alpha_arr)
         # x is beyond last threshold — truncated last piece
         ep_at_tn = 1.0 - _p_piecewise_pareto_s(t_arr[-1], t_arr, alpha_arr, None, "lp")
         ep_at_trunc = 1.0 - _p_piecewise_pareto_s(trunc, t_arr, alpha_arr, None, "lp")

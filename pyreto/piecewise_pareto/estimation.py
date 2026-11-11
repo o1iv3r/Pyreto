@@ -115,7 +115,6 @@ def piecewise_pareto_ml_estimator_alpha(
         warnings.warn("Number of losses > max(t) must be positive.")
         return np.full(k, np.nan)
 
-    use_rt = rt.max() > t_arr[0]
     has_censored = bool(cens.any())
 
     # Extended threshold array (k+1 elements, last = effective truncation)
@@ -123,44 +122,16 @@ def piecewise_pareto_ml_estimator_alpha(
 
     alpha_hat = np.zeros(k)
 
-    if not use_rt and not has_censored:
-        # Simple closed-form (no reporting thresholds, no censoring)
-        for i in range(k):
-            mask_i = ls >= t_ext[i]
-            ls_i = ls[mask_i]
-            w_i = w[mask_i]
-            w_sum_ip1 = w[ls >= t_ext[i + 1]].sum()
-            denom = np.sum(w_i * np.log(np.minimum(ls_i, t_ext[i + 1]) / t_ext[i]))
-            alpha_hat[i] = (w_i.sum() - w_sum_ip1) / denom
-
-    elif not has_censored:
-        # Reporting thresholds, no censoring
-        for i in range(k):
-            mask = (ls >= t_ext[i]) & (rt < t_ext[i + 1])
-            ls_i = ls[mask]
-            w_i = w[mask]
-            rt_i = rt[mask]
-            w_sum_ip1 = w[(ls >= t_ext[i + 1]) & (rt < t_ext[i + 1])].sum()
-            denom = np.sum(
-                w_i * np.log(np.minimum(ls_i, t_ext[i + 1]) / np.maximum(t_ext[i], rt_i))
-            )
-            alpha_hat[i] = (w_i.sum() - w_sum_ip1) / denom
-
-    else:
-        # Reporting thresholds + censoring
-        w_nc = w.copy()
-        w_nc[cens] = 0.0
-        for i in range(k):
-            mask = (ls >= t_ext[i]) & (rt < t_ext[i + 1])
-            ls_i = ls[mask]
-            w_i = w[mask]
-            w_nc_i = w_nc[mask]
-            rt_i = rt[mask]
-            w_nc_ip1 = w_nc[(ls >= t_ext[i + 1]) & (rt < t_ext[i + 1])].sum()
-            denom = np.sum(
-                w_i * np.log(np.minimum(ls_i, t_ext[i + 1]) / np.maximum(t_ext[i], rt_i))
-            )
-            alpha_hat[i] = (w_nc_i.sum() - w_nc_ip1) / denom
+    # Closed-form estimator per piece. Censored losses count in the exposure
+    # (denominator) but not as observed claims (numerator). Without reporting
+    # thresholds rt == t[0], so the rt terms below drop out.
+    w_nc = np.where(cens, 0.0, w)
+    for i in range(k):
+        reported = rt < t_ext[i + 1]
+        mask = (ls >= t_ext[i]) & reported
+        w_nc_ip1 = w_nc[(ls >= t_ext[i + 1]) & reported].sum()
+        exposure = np.log(np.minimum(ls[mask], t_ext[i + 1]) / np.maximum(t_ext[i], rt[mask]))
+        alpha_hat[i] = (w_nc[mask].sum() - w_nc_ip1) / np.sum(w[mask] * exposure)
 
     # --- Truncation adjustment ---
     if np.isinf(trunc_eff):
