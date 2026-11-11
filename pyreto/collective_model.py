@@ -9,6 +9,7 @@ from __future__ import annotations
 import numpy as np
 from numpy.typing import ArrayLike
 
+from pyreto.fitting import r_panjer
 from pyreto.gen_pareto import (
     gen_pareto_layer_mean,
     gen_pareto_layer_sm,
@@ -50,7 +51,11 @@ def _severity_layer_mean(model: CollectiveModel, cover: float, ap: float) -> flo
                 truncation_type=model.truncation_type,
             )
         )
-    return float(gen_pareto_layer_mean(cover, ap, model.t, model.alpha_ini, model.alpha_tail))
+    return float(
+        gen_pareto_layer_mean(
+            cover, ap, model.t, model.alpha_ini, model.alpha_tail, truncation=model.truncation
+        )
+    )
 
 
 def _severity_layer_sm(model: CollectiveModel, cover: float, ap: float) -> float:
@@ -66,7 +71,11 @@ def _severity_layer_sm(model: CollectiveModel, cover: float, ap: float) -> float
                 truncation_type=model.truncation_type,
             )
         )
-    return float(gen_pareto_layer_sm(cover, ap, model.t, model.alpha_ini, model.alpha_tail))
+    return float(
+        gen_pareto_layer_sm(
+            cover, ap, model.t, model.alpha_ini, model.alpha_tail, truncation=model.truncation
+        )
+    )
 
 
 def _severity_cdf(model: CollectiveModel, x: float) -> float:
@@ -81,10 +90,12 @@ def _severity_cdf(model: CollectiveModel, x: float) -> float:
                 truncation_type=model.truncation_type,
             )
         )
-    return float(p_gen_pareto(x, model.t, model.alpha_ini, model.alpha_tail))
+    return float(
+        p_gen_pareto(x, model.t, model.alpha_ini, model.alpha_tail, truncation=model.truncation)
+    )
 
 
-def _severity_sample(model: CollectiveModel, n: int) -> list[float]:
+def _severity_sample(model: CollectiveModel, n: int, rng: np.random.Generator) -> list[float]:
     """Draw ``n`` claim severities."""
     if n == 0:
         return []
@@ -95,8 +106,11 @@ def _severity_sample(model: CollectiveModel, n: int) -> list[float]:
             model.alpha,
             truncation=model.truncation,
             truncation_type=model.truncation_type,
+            rng=rng,
         ).tolist()
-    return r_gen_pareto(n, model.t, model.alpha_ini, model.alpha_tail).tolist()
+    return r_gen_pareto(
+        n, model.t, model.alpha_ini, model.alpha_tail, truncation=model.truncation, rng=rng
+    ).tolist()
 
 
 # ---------------------------------------------------------------------------
@@ -163,7 +177,7 @@ def layer_var(
     """
     _check_model(model)
     fq = float(model.fq)
-    disp = float(getattr(model, "dispersion", 1.0))
+    disp = float(model.dispersion)
     cover_arr = np.asarray(cover, dtype=float)
     ap_arr = np.asarray(attachment_point, dtype=float)
 
@@ -260,28 +274,10 @@ def simulate_losses(
         A list of length ``nyears``.  Each element is a list of individual
         claim severities (may be empty for zero-loss years).
     """
-    rng = np.random.default_rng(seed)
-    fq = float(model.fq)
-    disp = float(getattr(model, "dispersion", 1.0))
-
-    # Sample claim counts for each year
-    if disp == 1.0:
-        counts = rng.poisson(fq, size=nyears)
-    elif disp > 1.0:
-        # Negative Binomial: mean=fq, variance=fq*disp => r=fq/(disp-1), p=1/disp
-        r_nb = fq / (disp - 1.0)
-        p_nb = 1.0 / disp
-        counts = rng.negative_binomial(r_nb, p_nb, size=nyears)
-    else:
-        # Binomial: mean=fq, variance=fq*disp => n=fq/(1-disp), p=1-disp
-        n_bin = int(np.ceil(fq / (1.0 - disp)))
-        p_bin = fq / n_bin
-        counts = rng.binomial(n_bin, p_bin, size=nyears)
-
-    total_claims = int(counts.sum())
-
     _check_model(model)
-    all_sev = _severity_sample(model, total_claims)
+    rng = np.random.default_rng(seed)
+    counts = r_panjer(nyears, mean=float(model.fq), dispersion=float(model.dispersion), rng=rng)
+    all_sev = _severity_sample(model, int(counts.sum()), rng)
 
     # Split into years
     result: list[list[float]] = []

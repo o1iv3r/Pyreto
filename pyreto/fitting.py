@@ -21,6 +21,25 @@ from pyreto.piecewise_pareto import d_piecewise_pareto, p_piecewise_pareto
 # ---------------------------------------------------------------------------
 
 
+def _binomial_parameters(mean: float, dispersion: float) -> tuple[int, float]:
+    """Number of trials and success probability for the Panjer binomial case.
+
+    A binomial distribution has dispersion ``1 - p``, but ``mean / (1 - dispersion)``
+    is generally not an integer.  As in R's ``dPanjer`` / ``rPanjer``, the number of
+    trials is rounded up and ``p`` is recomputed so the mean is matched exactly; the
+    dispersion is adjusted instead (with a warning if it moves by more than 0.01).
+    """
+    n_bin = max(int(np.ceil(mean / (1.0 - dispersion))), 1)
+    p_bin = mean / n_bin
+    adjusted = 1.0 - p_bin
+    if abs(dispersion - adjusted) > 0.01:
+        warnings.warn(
+            f"Dispersion has been adjusted from {dispersion:.2f} to {adjusted:.2f}"
+            " to obtain a matching binomial distribution."
+        )
+    return n_bin, p_bin
+
+
 def d_panjer(k: int, *, mean: float, dispersion: float = 1.0) -> float:
     """Probability mass function of the Panjer (a, b, 0) distribution.
 
@@ -48,12 +67,8 @@ def d_panjer(k: int, *, mean: float, dispersion: float = 1.0) -> float:
         r = mean / (dispersion - 1.0)
         p = 1.0 / dispersion
         return float(stats.nbinom.pmf(k, n=r, p=p))
-    # dispersion < 1 → Binomial
-    # mean = n * q, dispersion = 1 - q  → q = 1 - dispersion, n = mean / q
-    q = 1.0 - dispersion
-    n_real = mean / q
-    n_bin = int(np.round(n_real))
-    return float(stats.binom.pmf(k, n=n_bin, p=q))
+    n_bin, p_bin = _binomial_parameters(mean, dispersion)
+    return float(stats.binom.pmf(k, n=n_bin, p=p_bin))
 
 
 def r_panjer(
@@ -90,10 +105,8 @@ def r_panjer(
         r = mean / (dispersion - 1.0)
         p = 1.0 / dispersion
         return rng.negative_binomial(r, p, size=n)
-    # Binomial
-    q = 1.0 - dispersion
-    n_bin = int(np.ceil(mean / q))
-    return rng.binomial(n_bin, q, size=n)
+    n_bin, p_bin = _binomial_parameters(mean, dispersion)
+    return rng.binomial(n_bin, p_bin, size=n)
 
 
 # ---------------------------------------------------------------------------
