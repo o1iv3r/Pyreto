@@ -9,16 +9,94 @@ from __future__ import annotations
 import numpy as np
 from numpy.typing import ArrayLike
 
-from pyreto.gen_pareto import gen_pareto_layer_mean, gen_pareto_layer_sm
+from pyreto.gen_pareto import (
+    gen_pareto_layer_mean,
+    gen_pareto_layer_sm,
+    p_gen_pareto,
+    r_gen_pareto,
+)
 from pyreto.pgp_model import PGPModel
 from pyreto.piecewise_pareto import (
     p_piecewise_pareto,
     piecewise_pareto_layer_mean,
     piecewise_pareto_layer_sm,
+    r_piecewise_pareto,
 )
 from pyreto.ppp_model import PPPModel
 
 CollectiveModel = PPPModel | PGPModel
+
+
+# ---------------------------------------------------------------------------
+# Severity dispatch: one place that knows how each model type is evaluated
+# ---------------------------------------------------------------------------
+
+
+def _check_model(model: CollectiveModel) -> None:
+    if not isinstance(model, (PPPModel, PGPModel)):
+        raise TypeError(f"Unsupported model type: {type(model)}")
+
+
+def _severity_layer_mean(model: CollectiveModel, cover: float, ap: float) -> float:
+    """Expected loss of a single claim in layer ``cover`` xs ``ap``."""
+    if isinstance(model, PPPModel):
+        return float(
+            piecewise_pareto_layer_mean(
+                cover,
+                ap,
+                model.t,
+                model.alpha,
+                truncation=model.truncation,
+                truncation_type=model.truncation_type,
+            )
+        )
+    return float(gen_pareto_layer_mean(cover, ap, model.t, model.alpha_ini, model.alpha_tail))
+
+
+def _severity_layer_sm(model: CollectiveModel, cover: float, ap: float) -> float:
+    """Second moment of a single claim in layer ``cover`` xs ``ap``."""
+    if isinstance(model, PPPModel):
+        return float(
+            piecewise_pareto_layer_sm(
+                cover,
+                ap,
+                model.t,
+                model.alpha,
+                truncation=model.truncation,
+                truncation_type=model.truncation_type,
+            )
+        )
+    return float(gen_pareto_layer_sm(cover, ap, model.t, model.alpha_ini, model.alpha_tail))
+
+
+def _severity_cdf(model: CollectiveModel, x: float) -> float:
+    """CDF of a single claim at ``x``."""
+    if isinstance(model, PPPModel):
+        return float(
+            p_piecewise_pareto(
+                x,
+                model.t,
+                model.alpha,
+                truncation=model.truncation,
+                truncation_type=model.truncation_type,
+            )
+        )
+    return float(p_gen_pareto(x, model.t, model.alpha_ini, model.alpha_tail))
+
+
+def _severity_sample(model: CollectiveModel, n: int) -> list[float]:
+    """Draw ``n`` claim severities."""
+    if n == 0:
+        return []
+    if isinstance(model, PPPModel):
+        return r_piecewise_pareto(
+            n,
+            model.t,
+            model.alpha,
+            truncation=model.truncation,
+            truncation_type=model.truncation_type,
+        ).tolist()
+    return r_gen_pareto(n, model.t, model.alpha_ini, model.alpha_tail).tolist()
 
 
 # ---------------------------------------------------------------------------
@@ -47,38 +125,11 @@ def layer_mean(
     np.ndarray
         Expected aggregate loss for each layer.
     """
-
+    _check_model(model)
+    fq = float(model.fq)
     cover_arr = np.asarray(cover, dtype=float)
     ap_arr = np.asarray(attachment_point, dtype=float)
-    fq = float(model.fq)
-
-    if isinstance(model, PPPModel):
-        trunc = model.truncation
-        trunc_type = model.truncation_type
-
-        def _single(cov: float, ap: float) -> float:
-            return fq * float(
-                piecewise_pareto_layer_mean(
-                    cov,
-                    ap,
-                    model.t,
-                    model.alpha,
-                    truncation=trunc,
-                    truncation_type=trunc_type,
-                )
-            )
-
-    elif isinstance(model, PGPModel):
-
-        def _single(cov: float, ap: float) -> float:
-            return fq * float(
-                gen_pareto_layer_mean(cov, ap, model.t, model.alpha_ini, model.alpha_tail)
-            )
-
-    else:
-        raise TypeError(f"Unsupported model type: {type(model)}")
-
-    return np.vectorize(_single)(cover_arr, ap_arr)
+    return np.vectorize(lambda c, a: fq * _severity_layer_mean(model, c, a))(cover_arr, ap_arr)
 
 
 # ---------------------------------------------------------------------------
@@ -110,48 +161,16 @@ def layer_var(
     np.ndarray
         Aggregate variance for each layer.
     """
-
-    cover_arr = np.asarray(cover, dtype=float)
-    ap_arr = np.asarray(attachment_point, dtype=float)
+    _check_model(model)
     fq = float(model.fq)
     disp = float(getattr(model, "dispersion", 1.0))
+    cover_arr = np.asarray(cover, dtype=float)
+    ap_arr = np.asarray(attachment_point, dtype=float)
 
-    if isinstance(model, PPPModel):
-        trunc = model.truncation
-        trunc_type = model.truncation_type
-
-        def _single(cov: float, ap: float) -> float:
-            sm = float(
-                piecewise_pareto_layer_sm(
-                    cov,
-                    ap,
-                    model.t,
-                    model.alpha,
-                    truncation=trunc,
-                    truncation_type=trunc_type,
-                )
-            )
-            mn = float(
-                piecewise_pareto_layer_mean(
-                    cov,
-                    ap,
-                    model.t,
-                    model.alpha,
-                    truncation=trunc,
-                    truncation_type=trunc_type,
-                )
-            )
-            return fq * sm + fq * (disp - 1.0) * mn**2
-
-    elif isinstance(model, PGPModel):
-
-        def _single(cov: float, ap: float) -> float:
-            sm = float(gen_pareto_layer_sm(cov, ap, model.t, model.alpha_ini, model.alpha_tail))
-            mn = float(gen_pareto_layer_mean(cov, ap, model.t, model.alpha_ini, model.alpha_tail))
-            return fq * sm + fq * (disp - 1.0) * mn**2
-
-    else:
-        raise TypeError(f"Unsupported model type: {type(model)}")
+    def _single(cov: float, ap: float) -> float:
+        sm = _severity_layer_sm(model, cov, ap)
+        mn = _severity_layer_mean(model, cov, ap)
+        return fq * sm + fq * (disp - 1.0) * mn**2
 
     return np.vectorize(_single)(cover_arr, ap_arr)
 
@@ -208,38 +227,10 @@ def excess_frequency(
     np.ndarray
         Expected excess frequency at each threshold.
     """
-    from pyreto.gen_pareto import p_gen_pareto
-
-    x_arr = np.asarray(x, dtype=float)
+    _check_model(model)
     fq = float(model.fq)
-
-    if isinstance(model, PPPModel):
-        trunc = model.truncation
-        trunc_type = model.truncation_type
-
-        def _single(xi: float) -> float:
-            return fq * (
-                1.0
-                - float(
-                    p_piecewise_pareto(
-                        xi,
-                        model.t,
-                        model.alpha,
-                        truncation=trunc,
-                        truncation_type=trunc_type,
-                    )
-                )
-            )
-
-    elif isinstance(model, PGPModel):
-
-        def _single(xi: float) -> float:
-            return fq * (1.0 - float(p_gen_pareto(xi, model.t, model.alpha_ini, model.alpha_tail)))
-
-    else:
-        raise TypeError(f"Unsupported model type: {type(model)}")
-
-    return np.vectorize(_single)(x_arr)
+    x_arr = np.asarray(x, dtype=float)
+    return np.vectorize(lambda xi: fq * (1.0 - _severity_cdf(model, xi)))(x_arr)
 
 
 # ---------------------------------------------------------------------------
@@ -269,9 +260,6 @@ def simulate_losses(
         A list of length ``nyears``.  Each element is a list of individual
         claim severities (may be empty for zero-loss years).
     """
-    from pyreto.gen_pareto import r_gen_pareto
-    from pyreto.piecewise_pareto import r_piecewise_pareto
-
     rng = np.random.default_rng(seed)
     fq = float(model.fq)
     disp = float(getattr(model, "dispersion", 1.0))
@@ -292,32 +280,8 @@ def simulate_losses(
 
     total_claims = int(counts.sum())
 
-    # Sample severities
-    if isinstance(model, PPPModel):
-        trunc = model.truncation
-        trunc_type = model.truncation_type
-        if total_claims > 0:
-            all_sev = r_piecewise_pareto(
-                total_claims,
-                model.t,
-                model.alpha,
-                truncation=trunc,
-                truncation_type=trunc_type,
-            ).tolist()
-        else:
-            all_sev = []
-    elif isinstance(model, PGPModel):
-        if total_claims > 0:
-            all_sev = r_gen_pareto(
-                total_claims,
-                model.t,
-                model.alpha_ini,
-                model.alpha_tail,
-            ).tolist()
-        else:
-            all_sev = []
-    else:
-        raise TypeError(f"Unsupported model type: {type(model)}")
+    _check_model(model)
+    all_sev = _severity_sample(model, total_claims)
 
     # Split into years
     result: list[list[float]] = []

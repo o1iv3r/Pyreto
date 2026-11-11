@@ -109,59 +109,21 @@ def gen_pareto_ml_estimator_alpha(
     rt = np.maximum(rt[idx], t)
     censored = censored[idx]
 
-    use_rt = np.any(rt > t)
     has_censored = np.any(censored)
 
-    def _u(x: np.ndarray) -> np.ndarray:
-        return 1.0 + alpha[0] / alpha[1] * (x / t - 1.0)
-
-    # Closure reference - will be set inside the optimizer
-    alpha = np.ones(2)
-
-    if not use_rt and not has_censored:
-        if np.isinf(trunc):
-
-            def neg_ll(a: np.ndarray) -> float:
-                u_l = 1.0 + a[0] / a[1] * (losses / t - 1.0)
-                return -float(np.sum(w * (np.log(a[0]) + (-a[1] - 1.0) * np.log(u_l))))
-
-        else:
-
-            def neg_ll(a: np.ndarray) -> float:
-                u_l = 1.0 + a[0] / a[1] * (losses / t - 1.0)
-                u_tr = 1.0 + a[0] / a[1] * (trunc / t - 1.0)
-                ll_i = np.log(a[0]) + (-a[1] - 1.0) * np.log(u_l) - np.log(1.0 - u_tr ** (-a[1]))
-                return -float(np.sum(w * ll_i))
-
-    elif not has_censored:
-        if np.isinf(trunc):
-
-            def neg_ll(a: np.ndarray) -> float:
-                u_l = 1.0 + a[0] / a[1] * (losses / t - 1.0)
-                u_rt = 1.0 + a[0] / a[1] * (rt / t - 1.0)
-                ll_i = np.log(a[0]) + (-a[1] - 1.0) * np.log(u_l) - np.log(u_rt ** (-a[1]))
-                return -float(np.sum(w * ll_i))
-
-        else:
-
-            def neg_ll(a: np.ndarray) -> float:
-                u_l = 1.0 + a[0] / a[1] * (losses / t - 1.0)
-                u_rt = 1.0 + a[0] / a[1] * (rt / t - 1.0)
-                u_tr = 1.0 + a[0] / a[1] * (trunc / t - 1.0)
-                denom = u_rt ** (-a[1]) - u_tr ** (-a[1])
-                ll_i = np.log(a[0]) + (-a[1] - 1.0) * np.log(u_l) - np.log(denom)
-                return -float(np.sum(w * ll_i))
-
-    else:
-
-        def neg_ll(a: np.ndarray) -> float:
-            u_l = 1.0 + a[0] / a[1] * (losses / t - 1.0)
-            u_rt = 1.0 + a[0] / a[1] * (rt / t - 1.0)
-            u_tr = 1.0 + a[0] / a[1] * (trunc / t - 1.0)
-            denom = u_rt ** (-a[1]) - u_tr ** (-a[1])
-            ll_c = np.log(u_l ** (-a[1]) - u_tr ** (-a[1])) - np.log(denom)
-            ll_u = np.log(a[0]) + (-a[1] - 1.0) * np.log(u_l) - np.log(denom)
-            return -float(np.sum(w * np.where(censored, ll_c, ll_u)))
+    def neg_ll(a: np.ndarray) -> float:
+        # Survival-type terms u(x)^(-alpha_tail) with u(x) = 1 + alpha_ini/alpha_tail * (x/t - 1).
+        # Without reporting thresholds u(rt) = 1, and without truncation u(trunc)^(-a) = 0,
+        # so this single formula covers every combination of rt / truncation / censoring.
+        u_l = 1.0 + a[0] / a[1] * (losses / t - 1.0)
+        u_rt = 1.0 + a[0] / a[1] * (rt / t - 1.0)
+        u_tr = 1.0 + a[0] / a[1] * (trunc / t - 1.0)
+        log_denom = np.log(u_rt ** (-a[1]) - u_tr ** (-a[1]))
+        ll = np.log(a[0]) + (-a[1] - 1.0) * np.log(u_l) - log_denom
+        if has_censored:
+            ll_c = np.log(u_l ** (-a[1]) - u_tr ** (-a[1])) - log_denom
+            ll = np.where(censored, ll_c, ll)
+        return -float(np.sum(w * ll))
 
     result = None
     try:

@@ -282,11 +282,9 @@ def gen_pareto_layer_mean(
     np.ndarray
         Expected layer loss values.
     """
-    if truncation is None:
-        vf = np.vectorize(_gen_pareto_layer_mean_s, excluded=["truncation"], otypes=[float])
-        return vf(cover, att, t, alpha_ini, alpha_tail, truncation=None)
-    vf = np.vectorize(_gen_pareto_layer_mean_s, otypes=[float])
-    return vf(cover, att, t, alpha_ini, alpha_tail, truncation)
+    return np.vectorize(_gen_pareto_layer_mean_s, otypes=[float])(
+        cover, att, t, alpha_ini, alpha_tail, truncation
+    )
 
 
 def gen_pareto_layer_sm(
@@ -319,11 +317,9 @@ def gen_pareto_layer_sm(
     np.ndarray
         Second moment of layer loss values.
     """
-    if truncation is None:
-        vf = np.vectorize(_gen_pareto_layer_sm_s, excluded=["truncation"], otypes=[float])
-        return vf(cover, att, t, alpha_ini, alpha_tail, truncation=None)
-    vf = np.vectorize(_gen_pareto_layer_sm_s, otypes=[float])
-    return vf(cover, att, t, alpha_ini, alpha_tail, truncation)
+    return np.vectorize(_gen_pareto_layer_sm_s, otypes=[float])(
+        cover, att, t, alpha_ini, alpha_tail, truncation
+    )
 
 
 def gen_pareto_layer_var(
@@ -356,8 +352,6 @@ def gen_pareto_layer_var(
     np.ndarray
         Variance of layer loss values.
     """
-    if truncation is None:
-        vf = np.vectorize(_gen_pareto_layer_var_s, excluded=["truncation"], otypes=[float])
-        return vf(cover, att, t, alpha_ini, alpha_tail, truncation=None)
-    vf = np.vectorize(_gen_pareto_layer_var_s, otypes=[float])
-    return vf(cover, att, t, alpha_ini, alpha_tail, truncation)
+    return np.vectorize(_gen_pareto_layer_var_s, otypes=[float])(
+        cover, att, t, alpha_ini, alpha_tail, truncation
+    )

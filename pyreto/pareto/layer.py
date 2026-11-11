@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import warnings
+from collections.abc import Callable
 
 import numpy as np
 from numpy.typing import ArrayLike
@@ -96,6 +97,41 @@ def _pareto_layer_mean_scalar(
     return ep
 
 
+def _vectorize_layer(
+    scalar_fn: Callable[..., float],
+    cover: ArrayLike,
+    attachment_point: ArrayLike,
+    alpha: ArrayLike,
+    t: ArrayLike | None,
+    truncation: ArrayLike | None,
+) -> np.ndarray:
+    """Apply a scalar layer-moment function elementwise.
+
+    ``t`` defaults to the attachment point and ``truncation`` to infinity.
+    """
+    cover = np.asarray(cover, dtype=float)
+    attachment_point = np.asarray(attachment_point, dtype=float)
+    alpha = np.asarray(alpha, dtype=float)
+    t_arr = np.asarray(t, dtype=float) if t is not None else attachment_point.copy()
+    trunc_arr = (
+        np.asarray(truncation, dtype=float)
+        if truncation is not None
+        else np.full_like(cover, np.inf)
+    )
+    return np.vectorize(scalar_fn)(cover, attachment_point, alpha, t_arr, trunc_arr)
+
+
+def _pareto_layer_sm_scalar(
+    cover: float, att: float, alpha: float, t: float, trunc_inf: float
+) -> float:
+    """Scalar second moment of a Pareto layer. trunc_inf=np.inf means no truncation."""
+    var = _pareto_layer_var_scalar(cover, att, alpha, t, trunc_inf)
+    mean = _pareto_layer_mean_scalar(cover, att, alpha, t, trunc_inf)
+    if np.isinf(var):
+        return np.inf
+    return var + mean * mean
+
+
 def pareto_layer_mean(
     cover: ArrayLike,
     attachment_point: ArrayLike,
@@ -128,17 +164,9 @@ def pareto_layer_mean(
     >>> pareto_layer_mean(8000, 2000, alpha=2)
     1600.0
     """
-    _vfun = np.vectorize(_pareto_layer_mean_scalar)
-    cover = np.asarray(cover, dtype=float)
-    attachment_point = np.asarray(attachment_point, dtype=float)
-    alpha = np.asarray(alpha, dtype=float)
-    t_arr = np.asarray(t, dtype=float) if t is not None else attachment_point.copy()
-    trunc_arr = (
-        np.asarray(truncation, dtype=float)
-        if truncation is not None
-        else np.full_like(cover, np.inf)
+    return _vectorize_layer(
+        _pareto_layer_mean_scalar, cover, attachment_point, alpha, t, truncation
     )
-    return _vfun(cover, attachment_point, alpha, t_arr, trunc_arr)
 
 
 def _pareto_layer_sm_simple_scalar(cover: float, attachment: float, alpha: float) -> float:
@@ -278,17 +306,7 @@ def pareto_layer_var(
     np.ndarray
         Layer variances.
     """
-    _vfun = np.vectorize(_pareto_layer_var_scalar)
-    cover = np.asarray(cover, dtype=float)
-    attachment_point = np.asarray(attachment_point, dtype=float)
-    alpha = np.asarray(alpha, dtype=float)
-    t_arr = np.asarray(t, dtype=float) if t is not None else attachment_point.copy()
-    trunc_arr = (
-        np.asarray(truncation, dtype=float)
-        if truncation is not None
-        else np.full_like(cover, np.inf)
-    )
-    return _vfun(cover, attachment_point, alpha, t_arr, trunc_arr)
+    return _vectorize_layer(_pareto_layer_var_scalar, cover, attachment_point, alpha, t, truncation)
 
 
 def pareto_layer_sm(

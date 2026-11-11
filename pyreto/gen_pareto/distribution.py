@@ -127,11 +127,7 @@ def p_gen_pareto(
     np.ndarray
         CDF values in [0, 1].
     """
-    if truncation is None:
-        vf = np.vectorize(_p_gen_pareto_s, excluded=["truncation"], otypes=[float])
-        return vf(x, t, alpha_ini, alpha_tail, truncation=None)
-    vf = np.vectorize(_p_gen_pareto_s, otypes=[float])
-    return vf(x, t, alpha_ini, alpha_tail, truncation)
+    return np.vectorize(_p_gen_pareto_s, otypes=[float])(x, t, alpha_ini, alpha_tail, truncation)
 
 
 def d_gen_pareto(
@@ -161,11 +157,7 @@ def d_gen_pareto(
     np.ndarray
         PDF values (zero outside support).
     """
-    if truncation is None:
-        vf = np.vectorize(_d_gen_pareto_s, excluded=["truncation"], otypes=[float])
-        return vf(x, t, alpha_ini, alpha_tail, truncation=None)
-    vf = np.vectorize(_d_gen_pareto_s, otypes=[float])
-    return vf(x, t, alpha_ini, alpha_tail, truncation)
+    return np.vectorize(_d_gen_pareto_s, otypes=[float])(x, t, alpha_ini, alpha_tail, truncation)
 
 
 def q_gen_pareto(
@@ -195,11 +187,7 @@ def q_gen_pareto(
     np.ndarray
         Quantile values.
     """
-    if truncation is None:
-        vf = np.vectorize(_q_gen_pareto_s, excluded=["truncation"], otypes=[float])
-        return vf(p, t, alpha_ini, alpha_tail, truncation=None)
-    vf = np.vectorize(_q_gen_pareto_s, otypes=[float])
-    return vf(p, t, alpha_ini, alpha_tail, truncation)
+    return np.vectorize(_q_gen_pareto_s, otypes=[float])(p, t, alpha_ini, alpha_tail, truncation)
 
 
 def r_gen_pareto(

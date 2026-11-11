@@ -5,33 +5,9 @@ from __future__ import annotations
 import numpy as np
 from numpy.typing import ArrayLike
 
-from pyreto._validation import valid_parameters_piecewise_pareto
 from pyreto.pareto.distribution import p_pareto
-from pyreto.pareto.layer import _pareto_layer_mean_scalar, _pareto_layer_var_scalar
-
-# ---------------------------------------------------------------------------
-# Private helpers
-# ---------------------------------------------------------------------------
-
-
-def _excess_probs(t_arr: np.ndarray, alpha_arr: np.ndarray) -> np.ndarray:
-    """P(X > t[i]) with P(X > t[0]) = 1 (unnormalised)."""
-    n = len(t_arr)
-    ep = np.ones(n)
-    if n > 1:
-        factors = t_arr[1:] / t_arr[:-1]
-        ep[1:] = np.cumprod((1.0 / factors) ** alpha_arr[:-1])
-    return ep
-
-
-def _pareto_sm_scalar(cover: float, att: float, alpha: float, t: float, trunc_inf: float) -> float:
-    """Pareto_Layer_SM(cover, att, alpha, t, trunc_inf). trunc_inf=np.inf = no truncation."""
-    var = _pareto_layer_var_scalar(cover, att, alpha, t, trunc_inf)
-    mean = _pareto_layer_mean_scalar(cover, att, alpha, t, trunc_inf)
-    if np.isinf(var):
-        return np.inf
-    return var + mean * mean
-
+from pyreto.pareto.layer import _pareto_layer_mean_scalar, _pareto_layer_sm_scalar
+from pyreto.piecewise_pareto._common import _excess_probs, _vectorize_piecewise
 
 # ---------------------------------------------------------------------------
 # Layer moments — scalar implementations
@@ -131,7 +107,7 @@ def _piecewise_pareto_layer_sm_scalar(
 
     if n == 1:
         trunc_inf = np.inf if trunc is None else float(trunc)
-        return _pareto_sm_scalar(cover, attachment, alpha_arr[0], t_arr[0], trunc_inf)
+        return _pareto_layer_sm_scalar(cover, attachment, alpha_arr[0], t_arr[0], trunc_inf)
 
     att_orig = attachment
     trunc_val = trunc
@@ -191,7 +167,7 @@ def _piecewise_pareto_layer_sm_scalar(
             w = prob[i]
             assert trunc_val is not None  # is_lp_last guarantees this
             trunc_float = float(trunc_val)
-            sm = _pareto_sm_scalar(piece_cover, att_i, alpha_arr[i], t_arr[i], trunc_float)
+            sm = _pareto_layer_sm_scalar(piece_cover, att_i, alpha_arr[i], t_arr[i], trunc_float)
             mean = _pareto_layer_mean_scalar(
                 piece_cover, att_i, alpha_arr[i], t_arr[i], trunc_float
             )
@@ -200,14 +176,14 @@ def _piecewise_pareto_layer_sm_scalar(
             result += 2.0 * shift * mean * w
         elif is_k2_piece:
             w = excess_prob[i]
-            sm = _pareto_sm_scalar(piece_cover, att_i, alpha_arr[i], t_arr[i], np.inf)
+            sm = _pareto_layer_sm_scalar(piece_cover, att_i, alpha_arr[i], t_arr[i], np.inf)
             mean = _pareto_layer_mean_scalar(piece_cover, att_i, alpha_arr[i], t_arr[i], np.inf)
             result += sm * w
             result += shift**2 * w * factor
             result += 2.0 * shift * mean * w
         else:
             w = prob[i]
-            sm = _pareto_sm_scalar(piece_cover, att_i, alpha_arr[i], t_arr[i], exit_i)
+            sm = _pareto_layer_sm_scalar(piece_cover, att_i, alpha_arr[i], t_arr[i], exit_i)
             mean = _pareto_layer_mean_scalar(piece_cover, att_i, alpha_arr[i], t_arr[i], exit_i)
             result += sm * w
             result += shift**2 * w * factor
@@ -255,20 +231,14 @@ def piecewise_pareto_layer_mean(
     np.ndarray
         Expected layer losses.
     """
-    cover_arr = np.asarray(cover, dtype=float)
-    att_arr = np.asarray(attachment_point, dtype=float)
-    t_arr = np.atleast_1d(np.asarray(t, dtype=float))
-    alpha_arr = np.atleast_1d(np.asarray(alpha, dtype=float))
-    if not valid_parameters_piecewise_pareto(
-        t_arr, alpha_arr, truncation, truncation_type, comment=True
-    ):
-        return np.full(np.broadcast(cover_arr, att_arr).shape, np.nan)
-    _vfun = np.vectorize(
-        lambda c, a: _piecewise_pareto_layer_mean_scalar(
-            c, a, t_arr, alpha_arr, truncation, truncation_type
-        )
+    return _vectorize_piecewise(
+        _piecewise_pareto_layer_mean_scalar,
+        (cover, attachment_point),
+        t,
+        alpha,
+        truncation,
+        truncation_type,
     )
-    return _vfun(cover_arr, att_arr)
 
 
 def piecewise_pareto_layer_sm(
@@ -301,20 +271,14 @@ def piecewise_pareto_layer_sm(
     np.ndarray
         Layer second moments.
     """
-    cover_arr = np.asarray(cover, dtype=float)
-    att_arr = np.asarray(attachment_point, dtype=float)
-    t_arr = np.atleast_1d(np.asarray(t, dtype=float))
-    alpha_arr = np.atleast_1d(np.asarray(alpha, dtype=float))
-    if not valid_parameters_piecewise_pareto(
-        t_arr, alpha_arr, truncation, truncation_type, comment=True
-    ):
-        return np.full(np.broadcast(cover_arr, att_arr).shape, np.nan)
-    _vfun = np.vectorize(
-        lambda c, a: _piecewise_pareto_layer_sm_scalar(
-            c, a, t_arr, alpha_arr, truncation, truncation_type
-        )
+    return _vectorize_piecewise(
+        _piecewise_pareto_layer_sm_scalar,
+        (cover, attachment_point),
+        t,
+        alpha,
+        truncation,
+        truncation_type,
     )
-    return _vfun(cover_arr, att_arr)
 
 
 def piecewise_pareto_layer_var(

@@ -10,6 +10,7 @@ from pyreto.pareto import (
     p_pareto,
     r_pareto,
 )
+from pyreto.piecewise_pareto._common import _excess_probs, _vectorize_piecewise
 
 # ---------------------------------------------------------------------------
 # CDF
@@ -94,17 +95,7 @@ def p_piecewise_pareto(
     np.ndarray
         CDF values.
     """
-    x_arr = np.asarray(x, dtype=float)
-    t_arr = np.asarray(t, dtype=float)
-    alpha_arr = np.asarray(alpha, dtype=float)
-    if not valid_parameters_piecewise_pareto(
-        t_arr, alpha_arr, truncation, truncation_type, comment=True
-    ):
-        return np.full(x_arr.shape if x_arr.ndim > 0 else (), np.nan)
-    _vfun = np.vectorize(
-        lambda xi: _p_piecewise_pareto_s(xi, t_arr, alpha_arr, truncation, truncation_type)
-    )
-    return _vfun(x_arr)
+    return _vectorize_piecewise(_p_piecewise_pareto_s, (x,), t, alpha, truncation, truncation_type)
 
 
 # ---------------------------------------------------------------------------
@@ -202,17 +193,7 @@ def d_piecewise_pareto(
     np.ndarray
         Density values.
     """
-    x_arr = np.asarray(x, dtype=float)
-    t_arr = np.asarray(t, dtype=float)
-    alpha_arr = np.asarray(alpha, dtype=float)
-    if not valid_parameters_piecewise_pareto(
-        t_arr, alpha_arr, truncation, truncation_type, comment=True
-    ):
-        return np.full(x_arr.shape if x_arr.ndim > 0 else (), np.nan)
-    _vfun = np.vectorize(
-        lambda xi: _d_piecewise_pareto_s(xi, t_arr, alpha_arr, truncation, truncation_type)
-    )
-    return _vfun(x_arr)
+    return _vectorize_piecewise(_d_piecewise_pareto_s, (x,), t, alpha, truncation, truncation_type)
 
 
 # ---------------------------------------------------------------------------
@@ -289,17 +270,7 @@ def q_piecewise_pareto(
     np.ndarray
         Quantile values.
     """
-    p_arr = np.asarray(p, dtype=float)
-    t_arr = np.asarray(t, dtype=float)
-    alpha_arr = np.asarray(alpha, dtype=float)
-    if not valid_parameters_piecewise_pareto(
-        t_arr, alpha_arr, truncation, truncation_type, comment=True
-    ):
-        return np.full(p_arr.shape if p_arr.ndim > 0 else (), np.nan)
-    _vfun = np.vectorize(
-        lambda yi: _q_piecewise_pareto_s(yi, t_arr, alpha_arr, truncation, truncation_type)
-    )
-    return _vfun(p_arr)
+    return _vectorize_piecewise(_q_piecewise_pareto_s, (p,), t, alpha, truncation, truncation_type)
 
 
 # ---------------------------------------------------------------------------
@@ -353,9 +324,7 @@ def r_piecewise_pareto(
         return r_pareto(n, t_arr[0], alpha_arr[0], truncation=truncation, rng=rng)
 
     # Compute unnormalised piece selection probabilities
-    factors_t = t_arr[1:] / t_arr[:-1]
-    excess_prob = np.ones(k)
-    excess_prob[1:] = np.cumprod((1.0 / factors_t) ** alpha_arr[:-1])
+    excess_prob = _excess_probs(t_arr, alpha_arr)
 
     prob_pieces = np.empty(k)
     prob_pieces[:-1] = -np.diff(excess_prob)
