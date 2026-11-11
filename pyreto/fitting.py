@@ -11,6 +11,11 @@ import numpy as np
 from numpy.typing import ArrayLike
 from scipy import stats
 
+from pyreto.gen_pareto import d_gen_pareto, p_gen_pareto
+from pyreto.matching import piecewise_pareto_match_layer_losses
+from pyreto.pareto import d_pareto, p_pareto
+from pyreto.piecewise_pareto import d_piecewise_pareto, p_piecewise_pareto
+
 # ---------------------------------------------------------------------------
 # Panjer (Poisson / NegBin / Binomial) distribution
 # ---------------------------------------------------------------------------
@@ -96,6 +101,34 @@ def r_panjer(
 # ---------------------------------------------------------------------------
 
 
+def _scipy_pdf_sf(
+    distribution: str, kwargs: dict[str, float | str | np.ndarray], x: np.ndarray
+) -> tuple[np.ndarray, np.ndarray] | None:
+    """PDF and survival function for the scipy-backed distributions, else None."""
+    if distribution == "norm":
+        dist = stats.norm(loc=float(kwargs.get("mean", 0.0)), scale=float(kwargs.get("sd", 1.0)))
+    elif distribution == "lnorm":
+        meanlog = float(kwargs.get("meanlog", 0.0))
+        dist = stats.lognorm(s=float(kwargs.get("sdlog", 1.0)), scale=np.exp(meanlog))
+    elif distribution == "gamma":
+        if "scale" in kwargs:
+            scale = float(kwargs["scale"])
+        else:
+            scale = 1.0 / float(kwargs["rate"])
+        dist = stats.gamma(a=float(kwargs["shape"]), scale=scale)
+    elif distribution == "weibull":
+        dist = stats.weibull_min(c=float(kwargs["shape"]), scale=float(kwargs.get("scale", 1.0)))
+    elif distribution == "exp":
+        if "rate" in kwargs:
+            scale = 1.0 / float(kwargs["rate"])
+        else:
+            scale = float(kwargs.get("scale", 1.0))
+        dist = stats.expon(scale=scale)
+    else:
+        return None
+    return dist.pdf(x), dist.sf(x)
+
+
 def local_pareto_alpha(
     x: ArrayLike,
     distribution: str,
@@ -135,49 +168,11 @@ def local_pareto_alpha(
     """
     x_arr = np.asarray(x, dtype=float)
 
-    if distribution == "norm":
-        loc = float(kwargs.get("mean", 0.0))
-        scale = float(kwargs.get("sd", 1.0))
-        dist = stats.norm(loc=loc, scale=scale)
-        pdf_vals = dist.pdf(x_arr)
-        sf_vals = dist.sf(x_arr)
-
-    elif distribution == "lnorm":
-        meanlog = float(kwargs.get("meanlog", 0.0))
-        sdlog = float(kwargs.get("sdlog", 1.0))
-        dist = stats.lognorm(s=sdlog, scale=np.exp(meanlog))
-        pdf_vals = dist.pdf(x_arr)
-        sf_vals = dist.sf(x_arr)
-
-    elif distribution == "gamma":
-        shape = float(kwargs["shape"])
-        if "scale" in kwargs:
-            scale = float(kwargs["scale"])
-        else:
-            scale = 1.0 / float(kwargs["rate"])
-        dist = stats.gamma(a=shape, scale=scale)
-        pdf_vals = dist.pdf(x_arr)
-        sf_vals = dist.sf(x_arr)
-
-    elif distribution == "weibull":
-        shape = float(kwargs["shape"])
-        scale = float(kwargs.get("scale", 1.0))
-        dist = stats.weibull_min(c=shape, scale=scale)
-        pdf_vals = dist.pdf(x_arr)
-        sf_vals = dist.sf(x_arr)
-
-    elif distribution == "exp":
-        if "rate" in kwargs:
-            scale = 1.0 / float(kwargs["rate"])
-        else:
-            scale = float(kwargs.get("scale", 1.0))
-        dist = stats.expon(scale=scale)
-        pdf_vals = dist.pdf(x_arr)
-        sf_vals = dist.sf(x_arr)
+    scipy_vals = _scipy_pdf_sf(distribution, kwargs, x_arr)
+    if scipy_vals is not None:
+        pdf_vals, sf_vals = scipy_vals
 
     elif distribution == "Pareto":
-        from pyreto.pareto import d_pareto, p_pareto
-
         t = float(kwargs["t"])
         alpha_p = float(kwargs["alpha"])
         truncation = kwargs.get("truncation", None)
@@ -186,8 +181,6 @@ def local_pareto_alpha(
         sf_vals = 1.0 - p_pareto(x_arr, t=t, alpha=alpha_p, truncation=trunc)
 
     elif distribution == "GenPareto":
-        from pyreto.gen_pareto import d_gen_pareto, p_gen_pareto
-
         t = float(kwargs["t"])
         alpha_ini = float(kwargs["alpha_ini"])
         alpha_tail = float(kwargs["alpha_tail"])
@@ -201,8 +194,6 @@ def local_pareto_alpha(
         )
 
     elif distribution == "PiecewisePareto":
-        from pyreto.piecewise_pareto import d_piecewise_pareto, p_piecewise_pareto
-
         t = np.asarray(kwargs["t"], dtype=float)
         alpha_pp = np.asarray(kwargs["alpha"], dtype=float)
         truncation = kwargs.get("truncation", None)
@@ -283,8 +274,6 @@ def fit_references(
     PPPModel
         Fitted model.
     """
-    from pyreto.matching import piecewise_pareto_match_layer_losses
-
     return piecewise_pareto_match_layer_losses(
         np.asarray(attachment_points, dtype=float),
         np.asarray(expected_layer_losses, dtype=float),
@@ -356,8 +345,6 @@ def fit_pml_curve(
     PPPModel
         Fitted model.
     """
-    from pyreto.matching import piecewise_pareto_match_layer_losses
-
     rp = np.asarray(return_periods, dtype=float)
     pml = np.asarray(pml_values, dtype=float)
 
