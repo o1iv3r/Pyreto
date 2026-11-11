@@ -12,6 +12,7 @@ from pyreto.pareto import (
     pareto_find_alpha_btw_layers,
     pareto_layer_mean,
 )
+from pyreto.ppp_model import PPPModel
 
 # ---------------------------------------------------------------------------
 # Top-level matching function (Task 11c)
@@ -69,7 +70,6 @@ def piecewise_pareto_match_layer_losses(
     PPPModel
         Fitted model.  ``model.is_valid()`` is True on success.
     """
-    from pyreto.ppp_model import PPPModel  # local import to avoid circular
 
     ap = np.asarray(attachment_points, dtype=float)
     el = np.asarray(expected_layer_losses, dtype=float)
