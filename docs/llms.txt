@@ -1,0 +1,19 @@
+# Pyreto
+
+> Python port of Ulrich Riegel's R package "Pareto": Pareto, piecewise Pareto and generalized Pareto distributions for reinsurance (excess-of-loss) pricing. Fit collective models to layer losses, excess frequencies or PML curves, then price layers, compute variances and simulate annual losses.
+
+Install from GitHub, not PyPI (the PyPI "pyreto" is a different package): `pip install "pyreto @ git+https://github.com/o1iv3r/Pyreto"`. Fitting functions signal failure through `model.status == 2` and `model.comment`, not exceptions.
+
+## Docs
+
+- [Agent guide](https://o1iv3r.github.io/Pyreto/agents/): workflows, failure handling and conventions for coding agents
+- [Vignette](https://o1iv3r.github.io/Pyreto/vignette/): worked examples
+- [Function mapping](https://o1iv3r.github.io/Pyreto/function_mapping/): R name to Python name
+
+## API reference
+
+- [Models and collective-model functions](https://o1iv3r.github.io/Pyreto/api/models/): PPPModel, PGPModel, layer_mean, layer_var, layer_sd, excess_frequency, simulate_losses
+- [Fitting](https://o1iv3r.github.io/Pyreto/api/fitting/): fit_references, piecewise_pareto_match_layer_losses, fit_pml_curve, local_pareto_alpha
+- [Pareto](https://o1iv3r.github.io/Pyreto/api/pareto/): layer moments, alpha finders, extrapolation
+- [Piecewise Pareto](https://o1iv3r.github.io/Pyreto/api/piecewise_pareto/)
+- [Generalized Pareto](https://o1iv3r.github.io/Pyreto/api/gen_pareto/)
