@@ -653,7 +653,7 @@ def fit_pml_curve(
     merge_tolerance: float = 1e-6,
     rol_tolerance: float = 1e-6,
     minimize_ratios: bool = True,
-) -> object:
+) -> PPPModel:
     """Fit a PPPModel to a Probable Maximum Loss (PML) curve.
 
     Port of ``Fit_PML_Curve`` from Functions.R.
