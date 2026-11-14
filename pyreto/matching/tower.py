@@ -65,21 +65,63 @@ def _calculate_layer_losses(
 
     if overlapping:
         tower = _solve_lp(att_layers, limits, exp_losses, thresholds, threshold_freqs)
-        if tower.status != 0 and not ignore_inconsistent_references:
-            return replace(tower, status=4)
     else:
+        # R sorts the layers here, which also fixes the order in which
+        # inconsistent references are dropped below.
+        order = np.argsort(att_layers, kind="stable")
+        att_layers, limits, exp_losses = att_layers[order], limits[order], exp_losses[order]
         tower = _build_non_overlapping_tower(
-            att_layers,
-            limits,
-            exp_losses,
-            thresholds,
-            threshold_freqs,
-            ignore_inconsistent_references=ignore_inconsistent_references,
+            att_layers, limits, exp_losses, thresholds, threshold_freqs
         )
-        if tower.status == 4:
-            return tower
+
+    if tower.status != 0:
+        if not ignore_inconsistent_references:
+            return replace(tower, status=4)
+        tower = _drop_inconsistent_references(
+            att_layers, limits, exp_losses, thresholds, threshold_freqs
+        )
 
     return _fill_missing_losses(tower, default_alpha)
+
+
+def _drop_inconsistent_references(
+    att_layers: np.ndarray,
+    limits: np.ndarray,
+    exp_losses: np.ndarray,
+    thresholds: np.ndarray | None,
+    threshold_freqs: np.ndarray | None,
+) -> _TowerResult:
+    """Greedily keep the references that are consistent with the ones kept before.
+
+    Layers are added one at a time (first layer always kept, no thresholds yet),
+    then thresholds one at a time; a reference is dropped if the LP becomes
+    infeasible.  Returns the LP tower of the kept references with status 1.
+    """
+    thr = np.asarray(thresholds if thresholds is not None else [], dtype=float)
+    thr_fq = np.asarray(threshold_freqs if threshold_freqs is not None else [], dtype=float)
+
+    def _lp(use_layer: np.ndarray, use_thr: np.ndarray) -> _TowerResult:
+        return _solve_lp(
+            att_layers[use_layer],
+            limits[use_layer],
+            exp_losses[use_layer],
+            thr[use_thr],
+            thr_fq[use_thr],
+        )
+
+    use_layer = np.zeros(len(att_layers), dtype=bool)
+    use_thr = np.zeros(len(thr), dtype=bool)
+    use_layer[:1] = True
+    for i in range(1, len(att_layers)):
+        use_layer[i] = True
+        if _lp(use_layer, use_thr).status != 0:
+            use_layer[i] = False
+    for i in range(len(thr)):
+        use_thr[i] = True
+        if _lp(use_layer, use_thr).status != 0:
+            use_thr[i] = False
+
+    return replace(_lp(use_layer, use_thr), status=1)
 
 
 def _build_non_overlapping_tower(
@@ -88,25 +130,17 @@ def _build_non_overlapping_tower(
     exp_losses: np.ndarray,
     thresholds: np.ndarray | None,
     threshold_freqs: np.ndarray | None,
-    *,
-    ignore_inconsistent_references: bool,
 ) -> _TowerResult:
-    """Sort the layers, add threshold rows and gap layers, then check consistency.
+    """Add threshold rows and gap layers to the (sorted) layers, then check consistency.
 
-    Returns status 4 if RoLs and frequencies are inconsistent and
-    ``ignore_inconsistent_references`` is False. Otherwise inconsistent
-    references are dropped one by one via the LP (status 1).
+    Returns status 4 if RoLs and frequencies are not non-increasing, else 0.
     """
     n_layers = len(att_layers)
-    order = np.argsort(att_layers)
-    s_att = att_layers[order]
-    s_lim = limits[order]
-    s_el = exp_losses[order]
 
-    # Start tower from sorted layers
-    t_att = list(s_att)
-    t_lim = list(s_lim)
-    t_el = list(s_el)
+    # Start tower from the layers
+    t_att = list(att_layers)
+    t_lim = list(limits)
+    t_el = list(exp_losses)
     t_freq = [np.nan] * n_layers
     t_info = [True] * n_layers  # EL came from input
 
@@ -177,60 +211,8 @@ def _build_non_overlapping_tower(
     fq_rol[1::2] = rols
     fq_rol_valid = fq_rol[~np.isnan(fq_rol)]
 
-    status = 0
-    if len(fq_rol_valid) > 1 and np.max(np.diff(fq_rol_valid)) > 0:
-        # Inconsistent references — attempt LP resolution
-        if not ignore_inconsistent_references:
-            return _TowerResult(
-                att=tower_att,
-                limits=tower_lim,
-                exp_loss=tower_el,
-                frequency=tower_freq,
-                info_available=el_info,
-                status=4,
-            )
-        # Try progressively dropping inconsistent references
-        use_layer = np.zeros(n_layers, dtype=bool)
-        use_layer[0] = True
-        for i in range(1, n_layers):
-            use_layer[i] = True
-            probe = _solve_lp(
-                att_layers[use_layer],
-                limits[use_layer],
-                exp_losses[use_layer],
-                thresholds,
-                threshold_freqs,
-            )
-            if probe.status != 0:
-                use_layer[i] = False
-
-        n_thr = len(thresholds) if thresholds is not None else 0
-        use_thr = np.zeros(n_thr, dtype=bool)
-        for i in range(n_thr):
-            use_thr[i] = True
-            probe = _solve_lp(
-                att_layers[use_layer],
-                limits[use_layer],
-                exp_losses[use_layer],
-                thresholds[use_thr] if thresholds is not None else None,
-                threshold_freqs[use_thr] if threshold_freqs is not None else None,
-            )
-            if probe.status != 0:
-                use_thr[i] = False
-
-        lp = _solve_lp(
-            att_layers[use_layer],
-            limits[use_layer],
-            exp_losses[use_layer],
-            thresholds[use_thr] if thresholds is not None and n_thr > 0 else None,
-            threshold_freqs[use_thr] if threshold_freqs is not None and n_thr > 0 else None,
-        )
-        tower_att = lp.att
-        tower_lim = lp.limits
-        tower_el = lp.exp_loss.copy()
-        tower_freq = lp.frequency.copy()
-        el_info = lp.info_available.copy()
-        status = 1  # some refs ignored
+    inconsistent = len(fq_rol_valid) > 1 and np.max(np.diff(fq_rol_valid)) > 0
+    status = 4 if inconsistent else 0
 
     return _TowerResult(
         att=tower_att,
