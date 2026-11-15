@@ -1,12 +1,13 @@
 ---
 name: pyreto
-description: Price excess-of-loss reinsurance layers with the Pyreto Python library - fit Pareto / piecewise Pareto collective models to layer losses, excess frequencies or PML curves, then compute layer means, variances, excess frequencies and simulations.
+description: Price excess-of-loss reinsurance layers with the Pyreto Python library - fit Pareto / piecewise Pareto collective models to layer losses, excess frequencies, PML curves or individual losses, then compute layer means, variances, excess frequencies and simulations.
 ---
 
 # Pyreto
 
 Use this when a task involves pricing reinsurance XL layers, fitting a severity curve to
-market references, or Pareto alpha calculations between layers.
+market references, estimating Pareto alphas from loss data (with reporting thresholds,
+censoring or truncation), or Pareto alpha calculations between layers.
 
 1. Install from GitHub, never from PyPI (the PyPI `pyreto` is another package):
    `uv add "pyreto @ git+https://github.com/o1iv3r/Pyreto"`.

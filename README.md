@@ -133,6 +133,25 @@ x = np.arange(1, 11) * 1e6
 pyreto.local_pareto_alpha(x, "norm", mean=5e6, sd=2e6)
 ```
 
+## Using Pyreto with a coding agent
+
+Pyreto is meant to be used from coding agents (Claude Code, Codex, Cursor, Copilot and
+similar) in "code mode": the agent writes and runs Python against the library instead of
+calling one tool per function.
+
+1. Install from GitHub in the project the agent works in (the PyPI `pyreto` is a different
+   package): `uv add "pyreto @ git+https://github.com/o1iv3r/Pyreto"`.
+2. Point the agent at the [agent guide](https://o1iv3r.github.io/Pyreto/agents/). It covers
+   the main workflows (fit a model to layer losses or frequencies, price layers, estimate
+   alphas from losses, simulate) and how failed fits are reported. Agents that read
+   `llms.txt` find it at <https://o1iv3r.github.io/Pyreto/llms.txt>.
+3. Optionally install the skill: copy [`skills/pyreto`](skills/pyreto/SKILL.md) into your
+   agent's skills folder (for Claude Code, `.claude/skills/pyreto/` in your project or
+   `~/.claude/skills/pyreto/`), or paste its content into your `AGENTS.md`.
+
+Then ask in plain language, for example: *"Fit a piecewise Pareto model to these three
+layers and the excess frequency at 1m, then price 2m xs 3m and simulate 10,000 years."*
+
 ## Contributing
 
 Contributions are welcome. To get started, clone the repo and install the development dependencies:

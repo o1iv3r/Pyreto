@@ -1,10 +1,10 @@
 # Using Pyreto from a coding agent
 
 This page is written for coding agents (and the people steering them). It covers the
-reinsurance-specific part of Pyreto: fitting severity/frequency models to market
-references, pricing XL layers, and working with collective models. Plain Pareto
-distribution maths (`p_/d_/q_/r_pareto`, Pareto ML estimation, Panjer counts) is also
-available, but `scipy.stats` covers it equally well.
+reinsurance-specific part of Pyreto: fitting models to market references or loss data,
+pricing XL layers, and working with collective models. The plain single-Pareto
+distribution functions (`p_/d_/q_/r_pareto`) are also available, but `scipy.stats.pareto`
+covers them equally well.
 
 ## Install
 
@@ -84,6 +84,42 @@ Per ground-up loss (no frequency): `pareto_layer_mean/var/sm`,
 `cover, attachment_point` plus the distribution parameters. Use the collective-model
 functions (`layer_mean`, `layer_var`, `layer_sd`) when you need annual figures.
 
+## Workflow 4: estimate alphas from individual losses
+
+When you have a loss list rather than layer figures, use the ML estimators. Unlike
+`scipy.stats.pareto.fit`, they handle what reinsurance data usually looks like: an upper
+`truncation`, per-loss `reporting_thresholds`, censored (still open) claims via
+`is_censored`, and `weights`.
+
+```python
+alpha = pyreto.pareto_ml_estimator_alpha(
+    losses, t=1000, reporting_thresholds=reporting_thresholds, is_censored=is_open,
+)
+alphas = pyreto.piecewise_pareto_ml_estimator_alpha(losses, t=[1000, 3000])   # one alpha per piece
+alpha_ini, alpha_tail = pyreto.gen_pareto_ml_estimator_alpha(losses, t=1000)
+```
+
+To see how tail-heavy a parametric severity is across the loss range, use
+`local_pareto_alpha(x, "lnorm", meanlog=7, sdlog=1)` (also `"norm"`, `"gamma"`, and
+others; see its docstring).
+
+## Workflow 5: build a model directly from parameters
+
+When the parameters come from expert judgment or an earlier estimate, construct the model
+yourself and use the same pricing functions as in workflow 1:
+
+```python
+model = pyreto.PPPModel(fq=2.0, t=[1000, 5000], alpha=[1.5, 2.5], dispersion=1.5)
+gp = pyreto.PGPModel(fq=2.0, t=1000, alpha_ini=1.5, alpha_tail=2.5)
+assert model.is_valid() and gp.is_valid()
+pyreto.layer_mean(model, cover=4000, attachment_point=1000)
+```
+
+The severity distributions themselves are available as `p_/d_/q_/r_` functions for
+`piecewise_pareto` and `gen_pareto` (scipy has neither), e.g.
+`q_piecewise_pareto([0.5, 0.99], t=[1000, 5000], alpha=[1.5, 2.5])`. Claim counts:
+`d_panjer(k, mean=..., dispersion=...)` and `r_panjer(n, mean=..., dispersion=...)`.
+
 ## Failure handling
 
 Fitting functions do **not** raise when the references cannot be matched. They return a
@@ -107,4 +143,5 @@ and fit the rest (status 1).
   for scalar-only functions). `np.inf` is a valid cover.
 - Functions mirror the R `Pareto` package with snake_case names; see
   [Function Mapping](function_mapping.md) if you know the R names.
-- Random functions take a `seed` argument; pass one for reproducible results.
+- For reproducible results pass `seed=` to `simulate_losses` and
+  `rng=np.random.default_rng(...)` to the `r_*` functions.
